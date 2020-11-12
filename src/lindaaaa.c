@@ -29,7 +29,7 @@ int main(int argc, char **argv){
     int payload_fd; // in memory file descriptor
     int write_return_size;
     int d; //to hold the return value of detect()
-    const char * payload_argv[] = {"./test_files/test_ELF", "testing", NULL}; // argv for payload
+    const char * payload_argv[] = {"../test_files/test_ELF", "testing", NULL}; // argv for payload
     const char * payload_envp[] = {NULL}; // envp for payload
      
 /*
