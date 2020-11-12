@@ -51,10 +51,9 @@ int main(int argc, char **argv){
 
     d = detect((unsigned char *)payload); //determine if the payload is an executable/ELF
 
-    // TODO: Recreate payload_fd if invalid (has returned STDIN, STDOUT, and STDERR before)
-    payload_fd = memfd_create("payload", 0); // create memory file descriptor for execution
-    if (payload_fd <= 2){
+    while ((payload_fd = memfd_create("payload", 0)) <= 2){ // create memory file descriptor for execution
         printf("memfd_create() failed. File descriptor created: %d\n", payload_fd);
+        close(payload_fd);
         return -1;
     }
 
