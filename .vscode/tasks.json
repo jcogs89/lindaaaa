@@ -8,7 +8,7 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${workspaceRoot}/build/lindaaaa"
+                "${fileDirname}/${fileBasenameNoExtension}"
             ],
             "options": {
                 "cwd": "/usr/bin"
