@@ -43,7 +43,7 @@ int main(int argc, char **argv){
     execute(decrypted);
 */
     
-    payload_file = fopen("./test_files/test_ELF", "r"); // open payload binary
+    payload_file = fopen("../test_files/test_ELF", "r"); // open payload binary
     size = fsize(payload_file); // get size in bytes
     payload = calloc(size, sizeof(unsigned char)); // allocate on heap
     fread(payload, sizeof(unsigned char), size, payload_file); // read file to heap
