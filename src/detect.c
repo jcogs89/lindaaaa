@@ -1,4 +1,5 @@
 #include "detect.h"
+#include <elf.h>
 
 //determine if the file is executable using the file's magic numbers
 //specifically checks if file is an ELF
@@ -8,10 +9,14 @@ int detect(unsigned char *payload){
     
     for(int i = 0; i < 4; i++){      //check the payload's magic bytes
         if (payload[i] != elfMagic[i]){
-            printf("not executable\n");
+            printf("Not executable\n");
             return 0;
         }
     }
-    printf("It's executable\n");
+    printf("It's an ELF\n");
+    if (((Elf64_Ehdr *)payload)->e_entry == 0){ //check if there's an entry point
+        printf("There's no entry point\n");
+    }
+    printf("There's an entry point\nEntry = %lu\n",((Elf64_Ehdr *)payload)->e_entry);
     return 1;
 }
