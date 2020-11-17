@@ -1,5 +1,5 @@
 #include "detect.h"
-#include <elf.h>
+
 
 //determine if the file is executable using the file's magic numbers
 //specifically checks if file is an ELF

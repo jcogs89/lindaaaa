@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-I. -D_GNU_SOURCE -g
-BINARIES=detect.o lindaaaa.o
+BINARIES=detect.o lindaaaa.o helpers.o
 TARGET=../build/lindaaaa
 
 lindaaaamake: $(BINARIES)
