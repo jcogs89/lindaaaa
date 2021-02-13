@@ -4,6 +4,7 @@
 #include <sys/mman.h>
 #include "detect.h"
 
+//comment
 //#include <decompress.h>
 //#include <decrypt.h>
 //#include <execute.h>
