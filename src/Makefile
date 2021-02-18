@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -D_GNU_SOURCE -g
+CFLAGS=-I. -D_GNU_SOURCE -g -lcurl -lsodium
 BINARIES=detect.o lindaaaa.o helpers.o
 TARGET=../build/lindaaaa
 

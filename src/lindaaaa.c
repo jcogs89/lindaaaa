@@ -3,13 +3,14 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include "detect.h"
+#include "helpers.h"
 
 //#include <decompress.h>
 //#include <decrypt.h>
 //#include <execute.h>
 //#include <networking.h>
 
-#define PAYLOAD_FILE "../test_files/test_static" // payload file to open, delete on final version
+#define PAYLOAD_FILE "../test_files/test_ELF" // payload file to open, delete on final version
 
 int main(int argc, char **argv){
     void *payload;
@@ -63,7 +64,7 @@ int main(int argc, char **argv){
             return -1;
         } 
     } else {
-        write_to_disk(payload, pathToWrite, size);
+        writeToDisk(payload, pathToWrite, size);
     }
 
     return 0;
