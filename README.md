@@ -7,3 +7,7 @@
 ## Dependencies
   libcurl4-openssl-dev
   
+## TODO
+  Add compiling options for:
+    How to beacon (instantly, every x seconds, on certain time)
+    Symmetric password to embed into the loader
