@@ -8,6 +8,6 @@
   * libcurl4-openssl-dev
   
 ## TODO
-  1. Add compiling options for:
+  - Add compiling options for:
     - How to beacon (instantly, every x seconds, on certain time)
     - Symmetric password to embed into the loader
