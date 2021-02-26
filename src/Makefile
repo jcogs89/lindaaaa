@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-I. -D_GNU_SOURCE -g -lsodium -lcurl
-BINARIES=detect.o lindaaaa.o helpers.o getHTTPS.o
+BINARIES=detect.o lindaaaa.o helpers.o networking.o
 TARGET=../build/lindaaaa
 
 lindaaaamake: $(BINARIES)

