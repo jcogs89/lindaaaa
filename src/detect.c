@@ -11,16 +11,12 @@ int detect(unsigned char *payload)
     { //check the payload's magic bytes
         if (payload[i] != elfMagic[i])
         {
-            printf("Not executable\n");
             return 0;
         }
     }
-    printf("It's an ELF\n");
     if (((Elf64_Ehdr *)payload)->e_entry == 0)
     { //check if there's an entry point
-        printf("There's no entry point, considering shared object file\n");
         return 0;
     }
-    printf("There's an entry point\nEntry = %lu\n", ((Elf64_Ehdr *)payload)->e_entry);
     return 1;
 }

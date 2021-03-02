@@ -14,6 +14,12 @@
 #define MINIZ_STATIC
 #endif
 
+typedef struct payloadStruct{
+    unsigned int uncompressedLength;
+    unsigned int encryptedLength;
+    unsigned int decryptedLength;
+}PayloadStruct;
+
 unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsigned int original_size);
 unsigned char *decompress(unsigned char *decrypted, uLong uncomp_len, uLong compressed_len);
 
@@ -24,5 +30,6 @@ void writeToDisk(void *payload, char *pathToWrite, int size);
 unsigned int getUncompLen(unsigned char *payload);
 unsigned int getDecryptedLen(unsigned char *payload);
 unsigned int getEncLen(unsigned char *payload);
+unsigned int getNumPayloads(unsigned char *payload);
 
 #endif

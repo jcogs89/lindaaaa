@@ -47,8 +47,9 @@ unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsi
 
     unsigned char *decrypted = calloc(original_size, sizeof(unsigned char));
 
-    if (sodium_init() != 0)
+    if (sodium_init() == -1)
     {
+        puts("Error init");
         return NULL;
     }
     // to delete in final
@@ -98,7 +99,6 @@ unsigned char *decompress(unsigned char *decrypted, uLong uncomp_len, uLong comp
 }
 
 unsigned int getUncompLen(unsigned char *payload){
-    puts("getting uncomp");
     unsigned int toRet = (payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24);
     return toRet;
 }
@@ -110,5 +110,10 @@ unsigned int getDecryptedLen(unsigned char *payload){
 
 unsigned int getEncLen(unsigned char *payload){
     unsigned int toRet = (payload[8] | payload[9] << 8 | payload[10] << 16 | payload[11] << 24);
+    return toRet;
+}
+
+unsigned int getNumPayloads(unsigned char *payload){
+    unsigned int toRet = (payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24);
     return toRet;
 }

