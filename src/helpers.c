@@ -49,13 +49,11 @@ unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsi
 
     if (sodium_init() == -1)
     {
-        puts("Error init");
         return NULL;
     }
     // to delete in final
     if ((fp_k = fopen("../test_files/secret-key", "rb")) == NULL)
     {
-        puts("Error.");
         return NULL;
     }
 
@@ -81,7 +79,6 @@ unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsi
 
     if (crypto_secretbox_open_easy(decrypted, encrypted_msg, ciphertext_len, nonce, key) != 0)
     {
-        puts("Error decrypt");
         return NULL;
     }
 

