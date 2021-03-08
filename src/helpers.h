@@ -14,13 +14,14 @@
 #define MINIZ_STATIC
 #endif
 
-typedef struct payloadStruct{
+typedef struct payloadStruct
+{
     unsigned int uncompressedLength;
     unsigned int encryptedLength;
     unsigned int decryptedLength;
-}PayloadStruct;
+} PayloadStruct;
 
-unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsigned int original_size);
+unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsigned int original_size, unsigned char *key);
 unsigned char *decompress(unsigned char *decrypted, uLong uncomp_len, uLong compressed_len);
 
 int fsize(FILE *fp);
@@ -32,6 +33,6 @@ unsigned int getDecryptedLen(unsigned char *payload);
 unsigned int getEncLen(unsigned char *payload);
 unsigned int getNumPayloads(unsigned char *payload);
 
-char *psswdPadding();
+unsigned char *psswdPadding();
 
 #endif

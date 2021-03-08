@@ -49,9 +49,9 @@ struct MemoryStruct getHTTPS()
         curl_easy_setopt(curl_handle, CURLOPT_URL, PAYLOAD_URL);                   // set url
         curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback); // set writing function override
         curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&payload);        // set writing destination
-        curl_easy_setopt(curl_handle, CURLOPT_FAILONERROR, (long)1);
-        curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, (long)0);
-        curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, (long)0);
+        curl_easy_setopt(curl_handle, CURLOPT_FAILONERROR, (long)1);               // do not retry on error
+        curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, (long)0);            // do not verify host
+        curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, (long)0);            // do not verify peer
 
         res = curl_easy_perform(curl_handle);
 

