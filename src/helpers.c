@@ -114,3 +114,28 @@ unsigned int getNumPayloads(unsigned char *payload){
     unsigned int toRet = (payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24);
     return toRet;
 }
+
+char *psswdPadding(char *psswd){
+    int len;
+    char pad[] = "#";
+
+    len = strlen(psswd);
+    printf("Password length: %d\n", len);
+
+    //add padding if necessary
+    while(len < 32){
+        strcat(psswd, pad);
+        len = strlen(psswd);
+    }
+    
+    //truncate password if necessary
+    if(len > 32){
+        psswd[32] = 0;
+    }
+
+    //Just checking
+    len = strlen(psswd);
+    printf("Password length: %d\nPassword: %s\n", len, psswd);
+
+    return psswd;
+}

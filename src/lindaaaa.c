@@ -44,6 +44,12 @@ int main(int argc, char **argv)
         payloadOffset += 12;
     }
 
+    // password padding
+    char *psswd;
+    psswd = (char *) malloc(32);
+    strcpy(psswd, ENC_PASSWORD); 
+    psswd = psswdPadding(psswd);
+
     for (int i = 0; i < numPayloads; i++)
     { // main loop to deploy payloads
 
