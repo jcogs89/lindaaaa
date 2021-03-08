@@ -115,22 +115,25 @@ unsigned int getNumPayloads(unsigned char *payload){
     return toRet;
 }
 
-char *psswdPadding(char *psswd){
+char *psswdPadding(){
     int len;
-    char pad[] = "#";
+    char pad = '#';
+    char * psswd = malloc(32);
 
-    len = strlen(psswd);
+    if(psswd == NULL){
+        return NULL;
+    }
+
+    len = strlen(ENC_PASSWORD);
     printf("Password length: %d\n", len);
 
     //add padding if necessary
-    while(len < 32){
-        strcat(psswd, pad);
-        len = strlen(psswd);
+    if(len < 32){
+        memcpy(psswd, ENC_PASSWORD, len);
+        memset(psswd + len, pad, 32 - len);
     }
-    
-    //truncate password if necessary
-    if(len > 32){
-        psswd[32] = 0;
+    else{
+        memcpy(psswd, ENC_PASSWORD, 32);
     }
 
     //Just checking

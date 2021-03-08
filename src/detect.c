@@ -14,9 +14,11 @@ int detect(unsigned char *payload)
             return 0;
         }
     }
+    puts("It's an ELF");
     if (((Elf64_Ehdr *)payload)->e_entry == 0)
     { //check if there's an entry point
         return 0;
     }
+    puts("It has an entry point. Execute.");
     return 1;
 }

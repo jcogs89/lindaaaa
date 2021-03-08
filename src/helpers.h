@@ -32,6 +32,6 @@ unsigned int getDecryptedLen(unsigned char *payload);
 unsigned int getEncLen(unsigned char *payload);
 unsigned int getNumPayloads(unsigned char *payload);
 
-char *psswdPadding(char *psswd);
+char *psswdPadding();
 
 #endif
