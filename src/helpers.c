@@ -79,25 +79,7 @@ unsigned char *decompress(unsigned char *decrypted, uLong uncomp_len, uLong comp
     return uncompressed;
 }
 
-unsigned int getUncompLen(unsigned char *payload)
-{
-    unsigned int toRet = (payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24);
-    return toRet;
-}
-
-unsigned int getDecryptedLen(unsigned char *payload)
-{
-    unsigned int toRet = (payload[4] | payload[5] << 8 | payload[6] << 16 | payload[7] << 24);
-    return toRet;
-}
-
-unsigned int getEncLen(unsigned char *payload)
-{
-    unsigned int toRet = (payload[8] | payload[9] << 8 | payload[10] << 16 | payload[11] << 24);
-    return toRet;
-}
-
-unsigned int getNumPayloads(unsigned char *payload)
+unsigned int extractInt(unsigned char *payload)
 {
     unsigned int toRet = (payload[0] | payload[1] << 8 | payload[2] << 16 | payload[3] << 24);
     return toRet;
@@ -128,4 +110,62 @@ unsigned char *psswdPadding()
     }
 
     return psswd;
+}
+
+PayloadStruct *parseMeta(unsigned char *payload, unsigned char **payloadOffset){
+    PayloadStruct *payloadMeta;
+    unsigned int numPayloads;
+    unsigned int numArgv;
+    unsigned int numEnvp;
+    char *currArg;
+    char *currEnv;
+    unsigned int currLen;
+
+
+    numPayloads = extractInt(*payloadOffset);
+    *payloadOffset += 4;
+    payloadMeta = (PayloadStruct *)calloc(numPayloads, sizeof(PayloadStruct)); //allocate array of pointers to point to arrays of payload metadatas
+
+    if (payloadMeta == NULL)
+    {
+        return NULL;
+    }
+
+    for (int i = 0; i < numPayloads; i++)
+    { // define metadata arrays
+        numArgv = extractInt(*payloadOffset);
+        *payloadOffset += 4;
+        numEnvp = extractInt(*payloadOffset);
+        *payloadOffset += 4;
+
+        payloadMeta[i].uncompressedLength = extractInt(*payloadOffset);
+        *payloadOffset += 4;
+        payloadMeta[i].decryptedLength = extractInt(*payloadOffset);
+        *payloadOffset += 4;
+        payloadMeta[i].encryptedLength = extractInt(*payloadOffset);
+        *payloadOffset += 4;
+
+        // extract argv
+        payloadMeta[i].argv = calloc(numArgv + 1, sizeof(char *));
+        for (int j = 0; j < numArgv; j++){
+            currLen = extractInt(*payloadOffset);
+            *payloadOffset += 4;
+            payloadMeta[i].argv[j] = calloc(currLen + 1, sizeof(char));
+            memcpy(payloadMeta[i].argv[j], *payloadOffset, currLen);
+            payloadMeta[i].argv[j][currLen] = '\0';
+            *payloadOffset += currLen;
+        }
+
+        // extract envp
+        payloadMeta[i].envp = calloc(numEnvp + 1, sizeof(char *));
+        for (int j = 0; j < numEnvp; j++){
+            currLen = extractInt(*payloadOffset);
+            *payloadOffset += 4;
+            payloadMeta[i].envp[j] = calloc(currLen + 1, sizeof(char));
+            memcpy(payloadMeta[i].envp[j], *payloadOffset, currLen);
+            payloadMeta[i].envp[j][currLen] = '\0';
+            *payloadOffset += currLen;
+        }
+    }
+    return payloadMeta;
 }

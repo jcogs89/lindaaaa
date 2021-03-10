@@ -19,6 +19,8 @@ typedef struct payloadStruct
     unsigned int uncompressedLength;
     unsigned int encryptedLength;
     unsigned int decryptedLength;
+    char **argv;
+    char **envp;
 } PayloadStruct;
 
 unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsigned int original_size, unsigned char *key);
@@ -28,11 +30,10 @@ int fsize(FILE *fp);
 int executePayload(int payload_fd, char **payload_argv, char **payload_envp);
 void writeToDisk(void *payload, char *pathToWrite, int size);
 
-unsigned int getUncompLen(unsigned char *payload);
-unsigned int getDecryptedLen(unsigned char *payload);
-unsigned int getEncLen(unsigned char *payload);
-unsigned int getNumPayloads(unsigned char *payload);
+unsigned int extractInt(unsigned char *payload);
 
 unsigned char *psswdPadding();
+
+PayloadStruct *parseMeta(unsigned char *payload, unsigned char **payloadOffset);
 
 #endif
