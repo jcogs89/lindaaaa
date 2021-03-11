@@ -112,7 +112,7 @@ unsigned char *psswdPadding()
     return psswd;
 }
 
-PayloadStruct *parseMeta(unsigned char *payload, unsigned char **payloadOffset){
+PayloadStruct *parseMeta(unsigned char **payloadOffset){
     PayloadStruct *payloadMeta;
     unsigned int numPayloads;
     unsigned int numArgv;
@@ -154,6 +154,9 @@ PayloadStruct *parseMeta(unsigned char *payload, unsigned char **payloadOffset){
             memcpy(payloadMeta[i].argv[j], *payloadOffset, currLen);
             payloadMeta[i].argv[j][currLen] = '\0';
             *payloadOffset += currLen;
+            for(int k = 0; k < strlen(payloadMeta[i].argv[j]); k++){
+                payloadMeta[i].argv[j][k] ^= 0xFE;
+            }
         }
 
         // extract envp
@@ -165,6 +168,9 @@ PayloadStruct *parseMeta(unsigned char *payload, unsigned char **payloadOffset){
             memcpy(payloadMeta[i].envp[j], *payloadOffset, currLen);
             payloadMeta[i].envp[j][currLen] = '\0';
             *payloadOffset += currLen;
+            for(int k = 0; k < strlen(payloadMeta[i].envp[j]); k++){
+                payloadMeta[i].envp[j][k] ^= 0xFE;
+            }
         }
     }
     return payloadMeta;

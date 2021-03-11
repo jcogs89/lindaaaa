@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     payloadOffset = payload.memory; // hold for iteration
     numPayloads = extractInt(payloadOffset);
 
-    payloadMeta = parseMeta(payload.memory, &payloadOffset); // extract all metadata
+    payloadMeta = parseMeta(&payloadOffset); // extract all metadata
     if(payloadMeta == NULL){
         //free everything
         return -1;
