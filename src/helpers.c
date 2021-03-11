@@ -90,6 +90,7 @@ unsigned char *psswdPadding()
     int len;
     char pad = '#';
     unsigned char *psswd = malloc(32);
+    unsigned char decoded[strlen(ENC_PASSWORD)]; 
 
     if (psswd == NULL)
     {
@@ -98,15 +99,19 @@ unsigned char *psswdPadding()
 
     len = strlen(ENC_PASSWORD);
 
+    for ( int i = 0; i < len; i++ ){
+        decoded[i] = ENC_PASSWORD[i] ^ 0x8F;
+    }
+
     //add padding if necessary
     if (len < 32)
     {
-        memcpy(psswd, ENC_PASSWORD, len);
+        memcpy(psswd, decoded, len);
         memset(psswd + len, pad, 32 - len);
     }
     else
     {
-        memcpy(psswd, ENC_PASSWORD, 32);
+        memcpy(psswd, decoded, 32);
     }
 
     return psswd;
