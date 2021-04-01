@@ -33,6 +33,7 @@ void writeToDisk(void *payload, char *pathToWrite, int size);
 unsigned int extractInt(unsigned char *payload);
 
 unsigned char *psswdPadding();
+char *formatURL(char *payload_url);
 
 PayloadStruct *parseMeta(unsigned char **payloadOffset);
 

