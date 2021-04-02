@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sodium.h>
 #include <string.h>
+#include <stdlib.h>
 #include "miniz.h"
 #include "preferences.h"
 
@@ -33,7 +34,7 @@ void writeToDisk(void *payload, char *pathToWrite, int size);
 unsigned int extractInt(unsigned char *payload);
 
 unsigned char *psswdPadding();
-char *formatURL(char *payload_url);
+char *formatURL();
 
 PayloadStruct *parseMeta(unsigned char **payloadOffset);
 

