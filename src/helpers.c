@@ -160,6 +160,8 @@ PayloadStruct *parseMeta(unsigned char **payloadOffset)
 
     for (int i = 0; i < numPayloads; i++)
     { // define metadata arrays
+        payloadMeta[i].flags = extractInt(*payloadOffset);
+        *payloadOffset += 4;
         numArgv = extractInt(*payloadOffset);
         *payloadOffset += 4;
         numEnvp = extractInt(*payloadOffset);

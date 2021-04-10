@@ -20,6 +20,7 @@ typedef struct payloadStruct
     unsigned int uncompressedLength;
     unsigned int encryptedLength;
     unsigned int decryptedLength;
+    unsigned int flags;
     char **argv;
     char **envp;
 } PayloadStruct;

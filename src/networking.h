@@ -14,7 +14,7 @@ struct MemoryStruct
   size_t size;
 };
 
-struct MemoryStruct getHTTPS();
-struct MemoryStruct beacon();
+struct MemoryStruct getHTTPS(char *URL);
+struct MemoryStruct beacon(char *URL);
 
 #endif
