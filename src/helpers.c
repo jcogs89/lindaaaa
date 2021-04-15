@@ -174,42 +174,50 @@ PayloadStruct *parseMeta(unsigned char **payloadOffset)
         payloadMeta[i].encryptedLength = extractInt(*payloadOffset);
         *payloadOffset += 4;
 
-        // extract argv
-        payloadMeta[i].argv = calloc(numArgv + 1, sizeof(char *));
-        for (int j = 0; j < numArgv; j++)
-        {
-            currLen = extractInt(*payloadOffset);
-            *payloadOffset += 4;
-            payloadMeta[i].argv[j] = calloc(currLen + 1, sizeof(char));
-            memcpy(payloadMeta[i].argv[j], *payloadOffset, currLen);
-            payloadMeta[i].argv[j][currLen] = '\0';
-            *payloadOffset += currLen;
-            for (int k = 0; k < strlen(payloadMeta[i].argv[j]); k++)
-            {
-                payloadMeta[i].argv[j][k] ^= 0xFE;
-            }
-        }
+        extractStrArr(payloadMeta, numArgv, &payloadMeta[i].argv, payloadOffset, 1);
 
-        // extract envp
-        payloadMeta[i].envp = calloc(numEnvp + 1, sizeof(char *));
-        for (int j = 0; j < numEnvp; j++)
+        extractStrArr(payloadMeta, numEnvp, &payloadMeta[i].envp, payloadOffset, 1);
+
+        currLen = extractInt(*payloadOffset);
+        *payloadOffset += 4;
+        extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
+        
+        currLen = extractInt(*payloadOffset);
+        *payloadOffset += 4;
+        extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
+    }
+    return payloadMeta;
+}
+
+void extractStrArr(PayloadStruct *payloadMeta, unsigned int numStrs, char ***dest, unsigned char **payloadOffset, char save)
+{
+    unsigned int currLen;
+
+    currLen = extractInt(*payloadOffset);
+    *payloadOffset += 4;
+    if (save)
+    {
+        *dest = calloc(currLen, sizeof(char *));
+        for (int j = 0; j < currLen; j++)
         {
             currLen = extractInt(*payloadOffset);
             *payloadOffset += 4;
-            payloadMeta[i].envp[j] = calloc(currLen + 1, sizeof(char));
-            memcpy(payloadMeta[i].envp[j], *payloadOffset, currLen);
-            payloadMeta[i].envp[j][currLen] = '\0';
+            *dest[j] = calloc(currLen + 1, sizeof(char));
+            memcpy(*dest[j], *payloadOffset, currLen);
+            *dest[j][currLen] = '\0';
             *payloadOffset += currLen;
-            for (int k = 0; k < strlen(payloadMeta[i].envp[j]); k++)
+            for (int k = 0; k < strlen(*dest[j]); k++)
             {
-                payloadMeta[i].envp[j][k] ^= 0xFE;
+                *dest[j][k] ^= 0xFE;
             }
         }
-        for (int j = 0; j < 3; j++){
+    }
+    else
+    {
+        for (int j = 0; j < numStrs; j++)
+        {
             currLen = extractInt(*payloadOffset);
             *payloadOffset += 4 + currLen;
         }
-
     }
-    return payloadMeta;
 }
