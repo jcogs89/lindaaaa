@@ -15,6 +15,6 @@ struct MemoryStruct
 };
 
 struct MemoryStruct getHTTPS(char *URL);
-struct MemoryStruct beacon(char *URL);
+struct MemoryStruct beacon(char *URL, char initial);
 
 #endif

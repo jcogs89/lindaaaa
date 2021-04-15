@@ -35,7 +35,10 @@ void writeToDisk(void *payload, char *pathToWrite, int size);
 unsigned int extractInt(unsigned char *payload);
 
 unsigned char *psswdPadding();
-char *formatURL();
+char *formatURL(char *payload, char *uid);
+char *genUID();
+size_t countPayloads(char *payloads);
+char **parsePayloads(char *payloads, size_t numPayloads);
 
 PayloadStruct *parseMeta(unsigned char **payloadOffset);
 void extractStrArr(PayloadStruct *payloadMeta, unsigned int numStrs, char ***dest, unsigned char **payloadOffset, char save);

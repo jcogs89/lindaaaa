@@ -25,7 +25,7 @@ int detect(unsigned char *payload)
 int checkKill(unsigned char *payload)
 {
     char *killCode = "\x06\x79\x69\x69\x0d\xf3\xa5\x4d\xc9\xd9\x38\x35\xa8\xc6\x32\x22";
-    char hash[MD5_DIGEST_LENGTH];
+    unsigned char hash[MD5_DIGEST_LENGTH];
 
     MD5(payload, 64, hash);
     for (int i = 0; i < 16; i++)
