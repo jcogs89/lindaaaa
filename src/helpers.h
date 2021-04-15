@@ -23,6 +23,7 @@ typedef struct payloadStruct
     unsigned int flags;
     char **argv;
     char **envp;
+    char *mitchStrings[3];
 } PayloadStruct;
 
 unsigned char *decrypt(unsigned char *encrypted, unsigned int input_length, unsigned int original_size, unsigned char *key);
