@@ -207,11 +207,7 @@ PayloadStruct *parseMeta(unsigned char **payloadOffset)
         }
         for (int j = 0; j < 3; j++){
             currLen = extractInt(*payloadOffset);
-            *payloadOffset += 4;
-            payloadMeta[i].mitchStrings[j] = calloc(currLen + 1, sizeof(char));
-            memcpy(payloadMeta[i].mitchStrings[j], *payloadOffset, currLen);
-            payloadMeta[i].mitchStrings[j][currLen] = '\0';
-            *payloadOffset += currLen;
+            *payloadOffset += 4 + currLen;
         }
 
     }
