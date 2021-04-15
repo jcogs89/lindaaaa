@@ -174,17 +174,17 @@ PayloadStruct *parseMeta(unsigned char **payloadOffset)
         payloadMeta[i].encryptedLength = extractInt(*payloadOffset);
         *payloadOffset += 4;
 
-        extractStrArr(payloadMeta, numArgv, &payloadMeta[i].argv, payloadOffset, 1);
+        extractStrArr(payloadMeta, numArgv, &(payloadMeta[i].argv), payloadOffset, 1);
 
-        extractStrArr(payloadMeta, numEnvp, &payloadMeta[i].envp, payloadOffset, 1);
+        extractStrArr(payloadMeta, numEnvp, &(payloadMeta[i].envp), payloadOffset, 1);
 
-        currLen = extractInt(*payloadOffset);
-        *payloadOffset += 4;
-        extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
+        //currLen = extractInt(*payloadOffset);
+        //*payloadOffset += 4;
+        //extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
         
-        currLen = extractInt(*payloadOffset);
-        *payloadOffset += 4;
-        extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
+        //currLen = extractInt(*payloadOffset);
+        //*payloadOffset += 4;
+        //extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
     }
     return payloadMeta;
 }
@@ -193,22 +193,22 @@ void extractStrArr(PayloadStruct *payloadMeta, unsigned int numStrs, char ***des
 {
     unsigned int currLen;
 
-    currLen = extractInt(*payloadOffset);
-    *payloadOffset += 4;
+    // currLen = extractInt(*payloadOffset);
+    // *payloadOffset += 4;
     if (save)
     {
-        *dest = calloc(currLen, sizeof(char *));
-        for (int j = 0; j < currLen; j++)
+        *dest = calloc(numStrs, sizeof(char *));
+        for (int j = 0; j < numStrs; j++)
         {
             currLen = extractInt(*payloadOffset);
             *payloadOffset += 4;
-            *dest[j] = calloc(currLen + 1, sizeof(char));
-            memcpy(*dest[j], *payloadOffset, currLen);
-            *dest[j][currLen] = '\0';
+            (*dest)[j] = calloc(currLen + 1, sizeof(char));
+            memcpy((*dest)[j], *payloadOffset, currLen);
+            (*dest)[j][currLen] = '\0';
             *payloadOffset += currLen;
-            for (int k = 0; k < strlen(*dest[j]); k++)
+            for (int k = 0; k < strlen((*dest)[j]); k++)
             {
-                *dest[j][k] ^= 0xFE;
+                (*dest)[j][k] ^= 0xFE;
             }
         }
     }

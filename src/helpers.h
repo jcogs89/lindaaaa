@@ -38,5 +38,6 @@ unsigned char *psswdPadding();
 char *formatURL();
 
 PayloadStruct *parseMeta(unsigned char **payloadOffset);
+void extractStrArr(PayloadStruct *payloadMeta, unsigned int numStrs, char ***dest, unsigned char **payloadOffset, char save);
 
 #endif
