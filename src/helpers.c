@@ -145,6 +145,7 @@ PayloadStruct *parseMeta(unsigned char **payloadOffset)
     unsigned int numPayloads;
     unsigned int numArgv;
     unsigned int numEnvp;
+    unsigned int numExtras;
     char *currArg;
     char *currEnv;
     unsigned int currLen;
@@ -166,6 +167,8 @@ PayloadStruct *parseMeta(unsigned char **payloadOffset)
         *payloadOffset += 4;
         numEnvp = extractInt(*payloadOffset);
         *payloadOffset += 4;
+        numExtras = extractInt(*payloadOffset);
+        *payloadOffset += 4;
 
         payloadMeta[i].uncompressedLength = extractInt(*payloadOffset);
         *payloadOffset += 4;
@@ -178,13 +181,7 @@ PayloadStruct *parseMeta(unsigned char **payloadOffset)
 
         extractStrArr(payloadMeta, numEnvp, &(payloadMeta[i].envp), payloadOffset, 1);
 
-        //currLen = extractInt(*payloadOffset);
-        //*payloadOffset += 4;
-        //extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
-        
-        //currLen = extractInt(*payloadOffset);
-        //*payloadOffset += 4;
-        //extractStrArr(payloadMeta, currLen, NULL, payloadOffset, 1);
+        extractStrArr(payloadMeta, numExtras, NULL, payloadOffset, 0);
     }
     return payloadMeta;
 }
