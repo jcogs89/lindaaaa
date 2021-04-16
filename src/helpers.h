@@ -15,6 +15,15 @@
 #define MINIZ_STATIC
 #endif
 
+/**
+ * @brief Holds all supplemental data needed for deployment of payload.
+ * @param uncompressedLength: Length of payload when uncompressed.
+ * @param encryptedLength: Length of payload when encrypted.
+ * @param decryptedLength: Length of payload when decrypted.
+ * @param flags: 32 bit wide field of boolean flags for payload deployment.
+ * @param argv: Payload argv.
+ * @param envp: Payload envp.
+ */
 typedef struct payloadStruct
 {
     unsigned int uncompressedLength;
@@ -41,6 +50,6 @@ size_t countPayloads(char *payloads);
 char **parsePayloads(char *payloads, size_t numPayloads);
 
 PayloadStruct *parseMeta(unsigned char **payloadOffset);
-void extractStrArr(PayloadStruct *payloadMeta, unsigned int numStrs, char ***dest, unsigned char **payloadOffset, char save);
+void extractStrArr(unsigned int numStrs, char ***dest, unsigned char **payloadOffset, char save);
 
 #endif

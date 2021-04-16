@@ -1,3 +1,9 @@
+/**
+ * Linux Loader main code for Lockheed Martin Packer/Loader II project, Senior Design Fall 2020 / Spring 2021.
+ * 
+ * Authors: Robert Weiner, James Cogswell, Elitania Venturella
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -9,7 +15,7 @@
 #include "networking.h"
 #include "preferences.h"
 
-int main(int argc, char **argv)
+int main()
 {
     struct MemoryStruct payload;
     void *decrypted;
