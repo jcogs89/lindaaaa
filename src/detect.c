@@ -36,11 +36,11 @@ int detect(unsigned char *payload)
  */
 int checkKill(unsigned char *payload)
 {
-    char *killCode = "\x06\x79\x69\x69\x0d\xf3\xa5\x4d\xc9\xd9\x38\x35\xa8\xc6\x32\x22";
-    unsigned char hash[MD5_DIGEST_LENGTH];
+    unsigned char *killCode = "\x8b\x95\x2c\xae\xc6\xeb\x3b\x43\xae\x86\x2b\xd8\xbf\x01\x22\x94\x17\xcb\x6d\x42\x03\x32\x23\x0b\x1a\x05\x7c\x52\x58\x3b\x31\xf3";
+    unsigned char hash[crypto_generichash_BYTES];
 
-    MD5(payload, 64, hash);
-    for (int i = 0; i < 16; i++)
+    crypto_generichash(hash, 32, payload, 64, NULL, 0);
+    for (int i = 0; i < 32; i++)
     {
         if (hash[i] != killCode[i])
         {
