@@ -190,12 +190,16 @@ char *genUID()
     // alphaNums is simply a-zA-Z0-9 XOR'd with 0xF0 to show on strings analysis
     char *alphaNums = "\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9";
     char *uid = calloc(65, sizeof(char));
+    FILE *urand = fopen("/dev/urandom", "r");
+    unsigned char buff[64];
+    fread(buff, 1, 64, urand);
+    fclose(urand);
 
     if (uid == NULL)
         return NULL;
 
     for (int i = 0; i < 64; i++)
-        uid[i] = alphaNums[rand() % 62] ^ 0xF0;
+        uid[i] = alphaNums[buff[i] % 62] ^ 0xF0;
 
     return uid;
 }
