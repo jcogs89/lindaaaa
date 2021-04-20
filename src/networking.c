@@ -90,10 +90,15 @@ struct MemoryStruct beacon(char *URL, char initial)
     size_t beaconMode;
     size_t beaconDateTime;
 
-    if (initial)
+    if (initial == 1) // first beacon
     {
         beaconMode = BEACON_MODE_INITIAL;
         beaconDateTime = BEACON_DATE_TIME_INITIAL;
+    }
+    else if(initial == 2) // beacon for instructions any time after first
+    {
+        beaconMode = BEACON_MODE_INSTRUCTIONS;
+        beaconDateTime = BEACON_DATE_TIME_INSTRUCTIONS;
     }
     else
     {

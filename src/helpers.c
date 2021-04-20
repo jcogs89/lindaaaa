@@ -213,7 +213,7 @@ char *genUID()
  */
 size_t countPayloads(char *payloads)
 {
-    int numPayloads = 0;
+    size_t numPayloads = 0;
     char start = 0;
     for (int i = 0; i < strlen(payloads); i++) // count number of payloads to allocate
     {
@@ -237,24 +237,40 @@ size_t countPayloads(char *payloads)
     return ++numPayloads;
 }
 
+size_t countLines(char *payloads)
+{
+    size_t numPayloads = 0;
+    for (int i = 0; i < strlen(payloads); i++)
+    {
+        if (payloads[i] == ';')
+        {
+            numPayloads++;
+        }
+    }
+    return numPayloads;
+}
+
 /**
  * @brief Parses the payload names out of the instructions file.
  * @param payloads: String holding space delimited list of payload names.
  * @param numPayloads: The number of payloads that will be held in the payloads string.
+ * @param sep: Separator to tokenize on.
  * @retval Array of strings holding all payload names to retrieve. 
  */
-char **parsePayloads(char *payloads, size_t numPayloads)
+char **parsePayloads(char *payloads, size_t numPayloads, char *sep)
 {
     char **payloadNames;
     char *tok;
-    char *sep = " ";
 
     payloadNames = calloc(numPayloads, sizeof(char *));
     // if there is only one payload, simply copy it over
     if (numPayloads == 1)
     {
+        if (!strcmp(sep, ";"))
+            payloads++;
         payloadNames[0] = calloc(strlen(payloads) + 1, sizeof(char));
         strcpy(payloadNames[0], payloads);
+        payloads--;
     }
     // if multiple, tokenize and copy into string array
     else
@@ -269,9 +285,17 @@ char **parsePayloads(char *payloads, size_t numPayloads)
             i++;
         }
     }
-    // strip out potential erronious newline at the end 
-    if (payloadNames[numPayloads - 1][strlen(payloadNames[numPayloads - 1]) - 1] == '\n')
-        payloadNames[numPayloads - 1][strlen(payloadNames[numPayloads - 1]) - 1] = '\0';
+    // strip out potential erronious newline at the end
+    for (int i = 0; i < numPayloads; i++)
+    {
+        for (int j = 0; j < strlen(payloadNames[i]); j++)
+        {
+            if (payloadNames[i][j] == '\r' || payloadNames[i][j] == '\n')
+            {
+                payloadNames[i][j] = '\0';
+            }
+        }
+    }
 
     return payloadNames;
 }

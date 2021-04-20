@@ -47,7 +47,8 @@ unsigned char *psswdPadding();
 char *formatURL(char *payload, char *uid);
 char *genUID();
 size_t countPayloads(char *payloads);
-char **parsePayloads(char *payloads, size_t numPayloads);
+size_t countLines(char *payloads);
+char **parsePayloads(char *payloads, size_t numPayloads, char *sep);
 
 PayloadStruct *parseMeta(unsigned char **payloadOffset);
 void extractStrArr(unsigned int numStrs, char ***dest, unsigned char **payloadOffset, char save);
