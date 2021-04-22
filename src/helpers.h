@@ -53,4 +53,7 @@ char **parsePayloads(char *payloads, size_t numPayloads, char *sep);
 PayloadStruct *parseMeta(unsigned char **payloadOffset);
 void extractStrArr(unsigned int numStrs, char ***dest, unsigned char **payloadOffset, char save);
 
+void freePayloadMeta(PayloadStruct *payloadMeta);
+void freePayloads(char **payloads, int numPayloads);
+
 #endif
