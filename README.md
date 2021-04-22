@@ -5,7 +5,8 @@
   * Paste the output of **passgen.py** into **preferences.h** as the value of **ENC_PASSWORD**
   * Ensure all other definitions held within **preferences.h** are correct for current deployment
     * **PAYLOAD_URL** is the URL of of the deployed packer with the correct arguments
-      * **"https://127.0.0.1:25566/api/testloader?send=payload-6"** would reach to the packer on localhost at port 25566 and retrieve testloader's payload 6
+      * **"https://127.0.0.1:25566/api/testloader?send="** would reach to the packer on localhost at port 25566 with the loader name testloader 
+      * **NOTE** The URL is automatically formatted. All that must be specified in the URL is the IP, port, and loader name
     * **PATH_TO_WRITE** is the path on disk to write any non-executable files
       * May become obsolete as the path may become metadata sent with payload
     * **ENC_PASSWORD** is the symmetric password used for encryption and decryption after it hsa been fed through **passgen.py**
