@@ -19,6 +19,7 @@
       * Once the specified time/date is reached, the loader will beacon only once
     * **BEACON\*_INITIAL** Follows logic above, but only applies for first beacon for instructions
     * **BEACON\*_INSTRUCTIONS** Follows logic above, but applies to all instructions beacons after the first
+  * If a new KillFile is to be used, calculate the Blake2b hash and paste it as the killCode in checkKill() in detect.c. As Blake2b is a hashing algorithm that can output any length hashes, if another hash length is used, the second argument to crypto_generichash() in checkKill() must be updated, as well as the for-loop counter value.
 
 ## Compiling
   * Run `make && make clean` in the /src directory
