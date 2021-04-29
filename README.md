@@ -5,7 +5,8 @@
   * Paste the output of **passgen.py** into **preferences.h** as the value of **ENC_PASSWORD**
   * Ensure all other definitions held within **preferences.h** are correct for current deployment
     * **PAYLOAD_URL** is the URL of of the deployed packer with the correct arguments
-      * **"https://127.0.0.1:25566/api/testloader?send=payload-6"** would reach to the packer on localhost at port 25566 and retrieve testloader's payload 6
+      * **"https://127.0.0.1:25566/api/testloader?send="** would reach to the packer on localhost at port 25566 with the loader name testloader 
+      * **NOTE** The URL is automatically formatted. All that must be specified in the URL is the IP, port, and loader name
     * **PATH_TO_WRITE** is the path on disk to write any non-executable files
       * May become obsolete as the path may become metadata sent with payload
     * **ENC_PASSWORD** is the symmetric password used for encryption and decryption after it hsa been fed through **passgen.py**
@@ -18,6 +19,8 @@
       * Once the specified time/date is reached, the loader will beacon only once
     * **BEACON\*_INITIAL** Follows logic above, but only applies for first beacon for instructions
     * **BEACON\*_INSTRUCTIONS** Follows logic above, but applies to all instructions beacons after the first
+  * If a new KillFile is to be used, calculate the Blake2b hash and paste it as the killCode in checkKill() in detect.c. As Blake2b is a hashing algorithm that can output any length hashes, if another hash length is used, the second argument to crypto_generichash() in checkKill() must be updated, as well as the for-loop counter value.
+  * Compilation currently is set to keep debugging symbols and use standard optimization. If either of these are to be changed, simply change the flags in CFLAGS in the Makefile.
 
 ## Compiling
   * Run `make && make clean` in the /src directory
@@ -30,4 +33,7 @@
   
 ## Unfinished Features
   * Static compilation/linking. I tried for 3 months, if you can get it statically linked (libCurl is what was giving the errors), it has all features requested, plus MANY more outlined in the Packer documentation.
+<<<<<<< HEAD
   * Hold non-executable files in memory instead of writing to disk for future payloads that may need them, futher removing need for any disk usage.
+=======
+>>>>>>> a3fc227bd38da776df881173c70db12fe2dad67d

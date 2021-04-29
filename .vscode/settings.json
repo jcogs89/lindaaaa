@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "preferences.h": "c",
-        "networking.h": "c",
-        "helpers.h": "c"
-    }
-}
