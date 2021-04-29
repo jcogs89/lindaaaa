@@ -196,12 +196,6 @@ int main()
                     free(uid);
                     return -1;
                 }
-                
-                if (payloadMeta[i].flags & 0x4){
-                    sprintf(currFileName, "%s%d", PATH_TO_WRITE, numFiles);
-                    writeToDisk(decompressed, currFileName, payloadMeta[i].uncompressedLength);
-                    numFiles++;
-                }
 
                 else
                 {
